@@ -15,10 +15,10 @@ SE_LAT, SE_LNG = 38.928212, -73.894883
 def get_api_key() -> str:
     # Load environment variables (private PurpleAir API key) from .env file
     load_dotenv()
-    PURPLEAIR_API_KEY = os.getenv('PURPLEAIR_API_KEY')
-    if not PURPLEAIR_API_KEY:
+    key = os.getenv('PURPLEAIR_API_KEY')
+    if not key:
         raise ValueError("PurpleAir API key not found in environment variables. Add it to a .env file.")
-    return PURPLEAIR_API_KEY
+    return key
 
 
 def get_sensors() -> pd.DataFrame:
