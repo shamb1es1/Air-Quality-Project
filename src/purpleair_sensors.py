@@ -29,9 +29,14 @@ def get_sensors() -> pd.DataFrame:
         'X-API-Key': get_api_key()
     }
 
+    # Fields we want from the API
+    required = {"sensor_index", "name", "latitude", "longitude", "date_created", "last_seen", "uptime"}
+
     # API parameters
+    # Location type set to 0 to get capture outdoor sensors (this is pre-NJ filtering)
     parameters = {
-        'fields': 'sensor_index,name,latitude,longitude',
+        'fields': ",".join(required),
+        'location_type': '0',
         'max_age': '0',
         'nwlng': NW_LNG,
         'nwlat': NW_LAT,
@@ -47,7 +52,6 @@ def get_sensors() -> pd.DataFrame:
     rows = response.get("data")
     if not fields or rows is None:
         raise ValueError("Unexpected payload format: missing 'fields' or 'data'.")
-    required = {"sensor_index", "name", "latitude", "longitude"}
     missing = required - set(fields)
     if missing:
         raise ValueError(f"Missing expected columns from API response: {missing}")
