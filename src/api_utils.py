@@ -8,6 +8,13 @@ key_names = {
     "AirNow": "AIRNOW_API_KEY"
 }
 
+# Arbitrary "bounding box" coordinates for New Jersey
+NW_LAT, NW_LNG = 41.357633, -75.560315
+SE_LAT, SE_LNG = 38.928212, -73.894883
+
+def get_bounding_box() -> tuple:
+    return NW_LAT, NW_LNG, SE_LAT, SE_LNG
+
 
 # Return the PurpleAir API key from environment variables
 def get_api_key(key_name: str) -> str:

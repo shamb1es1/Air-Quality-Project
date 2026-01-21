@@ -4,12 +4,7 @@ from dotenv import load_dotenv
 import pandas as pd
 import geopandas as gpd
 from pathlib import Path
-from api_utils import get_api_key
-
-
-# Arbitrary "bounding box" coordinates for New Jersey
-NW_LAT, NW_LNG = 41.357633, -75.560315
-SE_LAT, SE_LNG = 38.928212, -73.894883
+from api_utils import get_api_key, get_bounding_box
 
 
 def get_sensors() -> pd.DataFrame:
@@ -22,6 +17,9 @@ def get_sensors() -> pd.DataFrame:
 
     # Fields we want from the API
     required = {"sensor_index", "name", "latitude", "longitude", "date_created", "last_seen", "uptime"}
+
+    # Get coordinates from api_utils
+    NW_LAT, NW_LNG, SE_LAT, SE_LNG = get_bounding_box()
 
     # API parameters
     # Location type set to 0 to get capture outdoor sensors (this is pre-NJ filtering)

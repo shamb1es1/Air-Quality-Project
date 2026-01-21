@@ -12,12 +12,12 @@ from api_utils import get_api_key
 
 
 # Get the sensor indexes from the nj_sensors csv
-def get_sensors(path: Path) -> pd.Series:
+def get_sensor_indexes(path: Path) -> pd.Series:
     sensors = pd.read_csv(path)
     return sensors['sensor_index']
 
 # Get history of the sensor
-def _get_history(sensor_id: int) -> pd.DataFrame:
+def get_history(sensor_id: int) -> pd.DataFrame:
 
     # Days in 2025
     beginning = datetime.datetime(2025, 1, 1, 0, 0, 0, tzinfo=datetime.timezone.utc)
@@ -101,7 +101,7 @@ def call_histories(sensors: pd.Series):
                 q.task_done()
                 return
             try:
-                df = _get_history(sensor_id)
+                df = get_history(sensor_id)
                 with good_lock:
                     good.append((df))
                     print(f"{sensor_id}: success, {len(df)} rows")
@@ -128,22 +128,3 @@ def call_histories(sensors: pd.Series):
 
     combined = pd.concat(good, ignore_index=True) if good else pd.DataFrame()
     return combined, bad
-
-
-def main():
-    # Make sure sensors csv path exists
-    sensors_path = Path('data/nj_sensors.csv')
-    if not sensors_path.exists():
-        raise FileNotFoundError(f"{sensors_path} not found. Run get_nj_sensors first.")
-
-    sensor_indexes = get_sensors(sensors_path)
-
-    good, bad = call_histories(sensor_indexes)
-    good.to_csv("data/sensor_data.csv", index=False)
-    bad_df = pd.DataFrame(bad, columns=["sensor_index", "error"])
-    bad_df.to_csv("data/bad_sensor_calls.csv", index=False)
-
-
-
-if __name__ == "__main__":
-    main()
