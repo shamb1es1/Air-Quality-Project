@@ -8,16 +8,8 @@ import threading
 import queue
 import datetime
 import time
+from api_utils import get_api_key
 
-
-# Return the PurpleAir API key from environment variables
-def get_api_key() -> str:
-    # Load environment variables (private PurpleAir API key) from .env file
-    load_dotenv()
-    key = os.getenv("PURPLEAIR_API_KEY")
-    if not key:
-        raise ValueError("PURPLEAIR_API_KEY not found in environment variables (.env).")
-    return key
 
 # Get the sensor indexes from the nj_sensors csv
 def get_sensors(path: Path) -> pd.Series:
@@ -36,7 +28,7 @@ def _get_history(sensor_id: int) -> pd.DataFrame:
 
     # API header with the API key
     headers = {
-        'X-API-Key': get_api_key()
+        'X-API-Key': get_api_key('PurpleAir')
     }
 
     chunks = []
