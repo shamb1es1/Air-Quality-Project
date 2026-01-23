@@ -11,7 +11,7 @@ import time
 from api_utils import get_api_key
 
 
-# Get the sensor indexes from the nj_sensors csv
+# Get the sensor indexes from the purpleair_sensors csv
 def get_sensor_indexes(path: Path) -> pd.Series:
     sensors = pd.read_csv(path)
     return sensors['sensor_index']

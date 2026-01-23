@@ -9,18 +9,18 @@ import airnow_history
 def main():
     # For purpleair_sensors.py
     sensors_df = get_sensors()
-    nj_sensors = geo_utils.filter_non_nj(sensors_df)
-    nj_sensors.to_csv("data/nj_sensors.csv")
+    purpleair_sensors = geo_utils.filter_non_nj(sensors_df)
+    purpleair_sensors.to_csv("data/purpleair_sensors.csv")
     
     # For purpleair_history.py
-    sensor_indexes = get_sensor_indexes("data/nj_sensors.csv")
+    sensor_indexes = get_sensor_indexes("data/purpleair_sensors.csv")
     good, bad = call_histories(sensor_indexes)
-    good.to_csv("data/sensor_data.csv", index=False)
+    good.to_csv("data/purpleair_sensor_data.csv", index=False)
     bad_df = pd.DataFrame(bad, columns=["sensor_index", "error"])
     bad_df.to_csv("data/bad_sensor_calls.csv", index=False)
 
     airnow_df = airnow_history.get_airnow_history()
-    airnow_df.to_csv("data/airnow_data.csv", index=False)
+    airnow_df.to_csv("data/airnow_sensor_data.csv", index=False)
 
 
 if __name__ == "__main__":
