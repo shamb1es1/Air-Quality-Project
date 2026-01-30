@@ -66,3 +66,21 @@ SELECT DISTINCT sitename
 FROM staging_airnow_sensor_data
 WHERE fullaqscode = 840340000000;
 
+# Personal computer uses the eastern time zone for the OS, so need to set it to UTC to avoid the
+# earliest return data from appearing as if it was taken on 12/31/2024
+SET time_zone = '+00:00';
+
+# Verify all data from original utc column follows the same format
+SELECT utc 
+FROM staging_airnow_sensor_data
+WHERE utc NOT REGEXP '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}$';
+
+##### NEW COLUMNS
+
+# Create datetime_utc column
+ALTER TABLE staging_airnow_sensor_data
+ADD COLUMN datetime_utc DATETIME;
+
+# Change date format
+UPDATE staging_airnow_sensor_data
+SET datetime_utc = STR_TO_DATE(REPLACE(utc, 'T', ' '), '%Y-%m-%d %H:%i');

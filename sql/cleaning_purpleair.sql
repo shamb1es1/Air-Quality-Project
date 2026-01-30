@@ -1,5 +1,3 @@
-##### DROP COLUMNS
-
 ##### TYPE CHECKING
 
 # No null values found in staging_purpleair_sensors
@@ -22,29 +20,28 @@ WHERE sensor_index NOT REGEXP '^[0-9]+$' OR uptime NOT REGEXP '^[0-9]+$';
 SELECT latitude, longitude
 FROM staging_purpleair_sensors
 WHERE latitude NOT REGEXP '^[+-]?[0-9]{1,2}(\\.[0-9]+)?$'
-OR longitude NOT REGEXP '^[+-]?[0-9]{1,3}(\\.[0-9]+)?$';
+AND CAST(latitude AS DECIMAL(9,6)) NOT BETWEEN -90 AND 90
+OR longitude NOT REGEXP '^[+-]?[0-9]{1,3}(\\.[0-9]+)?$'
+AND CAST(longitude AS DECIMAL(9,6)) NOT BETWEEN -180 AND 180;
 
 # All unix timestamps valid
 SELECT date_created, last_seen
 FROM staging_purpleair_sensors
 WHERE date_created NOT REGEXP '^[0-9]{10}$' AND last_seen NOT REGEXP '^[0-9]{10}$';
 
-# NULL values found in humidity and temperature
-SELECT *
-FROM staging_purpleair_sensor_data
-WHERE time_stamp IS NULL OR TRIM(time_stamp) = ''
-OR humidity IS NULL OR TRIM(humidity) = ''
-OR temperature IS NULL OR TRIM(temperature) = ''
-OR `pm2.5_atm_a` IS NULL OR TRIM(`pm2.5_atm_a`) = ''
-OR `pm2.5_atm_b` IS NULL OR TRIM(`pm2.5_atm_b`) = ''
-OR `pm2.5_cf_1_a` IS NULL OR TRIM(`pm2.5_cf_1_a`) = ''
-OR `pm2.5_cf_1_b` IS NULL OR TRIM(`pm2.5_cf_1_b`) = '';
-
-# Get count of empty humidity and temperature values
-SELECT SUM(humidity = '') AS humidity_empty_ct,
-SUM(temperature = '') AS temperature_empty_ct
+# NULL values found in humidity, temperature, atm b sensors, and cf1 b sensors
+SELECT
+SUM(time_stamp IS NULL OR TRIM(time_stamp) = '') AS time_stamp_nulls,
+SUM(humidity IS NULL OR TRIM(humidity) = '') AS humidity_nulls,
+SUM(temperature IS NULL OR TRIM(temperature) = '') AS temperature_nulls,
+SUM(`pm2.5_atm_a` IS NULL OR TRIM(`pm2.5_atm_a`) = '') AS pm25_atm_a_nulls,
+SUM(`pm2.5_atm_b` IS NULL OR TRIM(`pm2.5_atm_b`) = '') AS pm25_atm_b_nulls,
+SUM(`pm2.5_cf_1_a` IS NULL OR TRIM(`pm2.5_cf_1_a`) = '') AS pm25_cf_1_a_nulls,
+SUM(`pm2.5_cf_1_b` IS NULL OR TRIM(`pm2.5_cf_1_b`) = '') AS pm25_cf_1_b_nulls
 FROM staging_purpleair_sensor_data;
 
+# Look at what proportion of an indexes humidity and temperature values are not
+# appearing
 SELECT
   sensor_index,
   humidity_empty_ct,
@@ -62,38 +59,138 @@ FROM (
 	FROM staging_purpleair_sensor_data
 	GROUP BY sensor_index
 ) s
-WHERE humidity_empty_ct > 0 OR temperature_empty_ct > 0;
+WHERE humidity_empty_ct > 0 OR temperature_empty_ct > 0
+ORDER BY humidity_empty_pct DESC, temperature_empty_pct DESC;
 
+# Removing empty humidity and temperature rows
+DELETE FROM staging_purpleair_sensor_data
+WHERE humidity = '' OR humidity IS NULL OR temperature = '' OR temperature IS NULL;
 
-# Check from preceding and following hour values for humidity
-SELECT
-  t.sensor_index,
-  t.time_stamp,
-  t.humidity,
-  -- check whether the exact previous/next hour exists
-  EXISTS (
-    SELECT 1
-    FROM staging_purpleair_sensor_data p
-    WHERE p.sensor_index = t.sensor_index
-      AND p.time_stamp = t.time_stamp - INTERVAL 1 HOUR
-      AND p.humidity IS NOT NULL
-  ) AS has_prev_1h,
-  EXISTS (
-    SELECT 1
-    FROM staging_purpleair_sensor_data n
-    WHERE n.sensor_index = t.sensor_index
-      AND n.time_stamp = t.time_stamp + INTERVAL 1 HOUR
-      AND n.humidity IS NOT NULL
-  ) AS has_next_1h
-FROM staging_purpleair_sensor_data t
-WHERE t.humidity IS NULL;
+# Look at what sensors are primary culprits
+SELECT sensor_index,
+SUM(`pm2.5_atm_b` IS NULL OR TRIM(`pm2.5_atm_b`) = '') AS pm25_atm_b_bad_rows,
+SUM(`pm2.5_cf_1_b` IS NULL OR TRIM(`pm2.5_cf_1_b`) = '') AS pm25_cf_1_b_bad_rows
+FROM staging_purpleair_sensor_data 
+GROUP BY sensor_index
+HAVING pm25_atm_b_bad_rows > 1 OR pm25_cf_1_b_bad_rows > 1;
+
+# Because there are only 2 sensors that have missing data in these categories, it's
+# easier to delete those sensors from the data set in case they are faulty overall
+DELETE FROM staging_purpleair_sensors
+WHERE sensor_index IN (
+  SELECT sensor_index
+  FROM (
+    SELECT DISTINCT sensor_index
+    FROM staging_purpleair_sensor_data
+    WHERE (`pm2.5_atm_b` IS NULL OR TRIM(`pm2.5_atm_b`) = '')
+       OR (`pm2.5_cf_1_b` IS NULL OR TRIM(`pm2.5_cf_1_b`) = '')
+  ) s
+);
+
+# Delete possibly fault sensor data from above
+DELETE FROM staging_purpleair_sensor_data
+WHERE sensor_index IN (
+  SELECT sensor_index
+  FROM (
+    SELECT DISTINCT sensor_index
+    FROM staging_purpleair_sensor_data
+    WHERE (`pm2.5_atm_b` IS NULL OR TRIM(`pm2.5_atm_b`) = '')
+       OR (`pm2.5_cf_1_b` IS NULL OR TRIM(`pm2.5_cf_1_b`) = '')
+  ) s
+);
 
 # Personal computer uses the eastern time zone for the OS, so need to set it to UTC to avoid the
 # earliest return data from appearing as if it was taken on 12/31/2024
-SET time_zone = '+00:00';
+# Prevented problem where 1762059600 and 1762063200 we're being converted to the
+# same datetime bucket due to daylight savings
+SET SESSION time_zone = '+00:00';
 
-# Verify unix timecode converts to 1/1/2025 00:00:00.00
+# Verify unix timecode converts to 1/1/2025 00:00:00.00 in sensor csv
+(SELECT date_created AS unix_ts, FROM_UNIXTIME(date_created) AS converted_ts,
+'date_created' AS source_col
+FROM staging_purpleair_sensors
+ORDER BY date_created ASC
+LIMIT 5)
+UNION ALL
+(SELECT last_seen AS unix_ts, FROM_UNIXTIME(last_seen) AS converted_ts,
+'last_seen' AS source_col
+FROM staging_purpleair_sensors
+ORDER BY last_seen ASC
+LIMIT 5);
+
+# Verify unix timecode converts to 1/1/2025 00:00:00.00 in sensor data csv
 SELECT time_stamp, from_unixtime(time_stamp) AS dt FROM staging_purpleair_sensor_data
 ORDER BY dt asc
 LIMIT 5;
 
+# Verify all ints convertable to a unix time in sensor csv
+SELECT date_created, last_seen
+FROM staging_purpleair_sensors
+WHERE FROM_UNIXTIME(date_created) IS NULL OR FROM_UNIXTIME(last_seen) IS NULL;
+
+# Verify all ints convertable to a unix time in sensor data csv
+SELECT time_stamp
+FROM staging_purpleair_sensor_data
+WHERE FROM_UNIXTIME(time_stamp) IS NULL;
+
+SELECT FROM_UNIXTIME(time_stamp) from staging_purpleair_sensor_data;
+
+##### NEW COLUMNS
+
+# Create datetime_date_created
+ALTER TABLE staging_purpleair_sensors
+ADD COLUMN datetime_date_created DATETIME;
+
+# Change date format for date_created
+UPDATE staging_purpleair_sensors
+SET datetime_date_created = DATE_FORMAT(
+FROM_UNIXTIME(date_created),'%Y-%m-%d %H:00:00');
+
+# Create datetime_last_seen
+ALTER TABLE staging_purpleair_sensors
+ADD COLUMN datetime_last_seen DATETIME;
+
+# Change date format for last_seen
+UPDATE staging_purpleair_sensors
+SET datetime_last_seen = DATE_FORMAT(
+FROM_UNIXTIME(last_seen),'%Y-%m-%d %H:00:00');
+
+# Create datetime_timestamp
+ALTER TABLE staging_purpleair_sensor_data
+ADD COLUMN datetime_timestamp DATETIME;
+
+# Change date format for time_stamp
+UPDATE staging_purpleair_sensor_data
+SET datetime_timestamp = 
+CAST(DATE_FORMAT(FROM_UNIXTIME(time_stamp),'%Y-%m-%d %H:00:00') AS DATETIME);
+
+##### KEY VERIFICATION
+
+# Check for duplicate keys (PK is sensor_index and datetime_timestamp)
+SELECT sensor_index, datetime_timestamp, COUNT(*)
+FROM staging_purpleair_sensor_data
+GROUP BY sensor_index, datetime_timestamp
+HAVING COUNT(*) > 1;
+
+# Was used for evaluating previous time bucketing error
+SELECT *
+FROM staging_purpleair_sensor_data
+WHERE (sensor_index, datetime_timestamp) IN (
+	SELECT sensor_index, datetime_timestamp
+	FROM (
+		SELECT sensor_index, datetime_timestamp, COUNT(*)
+		FROM staging_purpleair_sensor_data
+		GROUP BY sensor_index, datetime_timestamp
+		HAVING COUNT(*) > 1
+	) i
+)
+ORDER BY sensor_index, datetime_timestamp;
+
+# Verfied the timestamps that were getting bucketed to the same datetime are now
+# split
+SELECT
+  time_stamp,
+  FROM_UNIXTIME(time_stamp) AS dt
+FROM staging_purpleair_sensor_data
+WHERE time_stamp IN (1762059600, 1762063200)
+LIMIT 20;
