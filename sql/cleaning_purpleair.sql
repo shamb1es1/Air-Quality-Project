@@ -16,6 +16,49 @@ SELECT sensor_index, uptime
 FROM staging_purpleair_sensors
 WHERE sensor_index NOT REGEXP '^[0-9]+$' OR uptime NOT REGEXP '^[0-9]+$';
 
+# Check what sensor_index's appear in the sensory history data set that don't appear
+# in the sensor data set
+SELECT d.sensor_index, COUNT(*) AS row_ct
+FROM staging_purpleair_sensor_data d
+LEFT JOIN staging_purpleair_sensors s
+ON s.sensor_index = d.sensor_index
+WHERE s.sensor_index IS NULL
+GROUP BY d.sensor_index;
+
+# Check what sensor_index's appear in the  sensory data set that don't appear
+# in the sensor history data set
+SELECT s.sensor_index
+FROM staging_purpleair_sensors s
+LEFT JOIN staging_purpleair_sensor_data d
+ON d.sensor_index = s.sensor_index
+WHERE d.sensor_index IS NULL;
+
+# Delete the unused sensors
+DELETE FROM staging_purpleair_sensors
+WHERE sensor_index IN (
+  SELECT sensor_index
+  FROM (
+    SELECT s.sensor_index
+    FROM staging_purpleair_sensors s
+    LEFT JOIN staging_purpleair_sensor_data d
+      ON d.sensor_index = s.sensor_index
+    WHERE d.sensor_index IS NULL
+  ) x
+);
+
+SELECT s.sensor_index, COUNT(*) AS row_ct
+FROM staging_purpleair_sensor_data d
+RIGHT JOIN staging_purpleair_sensors s
+ON s.sensor_index = d.sensor_index
+WHERE d.sensor_index IS NULL
+GROUP BY s.sensor_index;
+
+select distinct sensor_index
+from staging_purpleair_sensor_data
+where sensor_index like '%\r';
+
+select * from staging_purpleair_sensors where sensor_index = 3771;
+
 # All latitude and longitude values valid
 SELECT latitude, longitude
 FROM staging_purpleair_sensors
@@ -52,9 +95,9 @@ SELECT
   ROUND(100*temperature_empty_ct/NULLIF(temperature_ct, 0),1) AS temperature_empty_pct
 FROM (
 	SELECT sensor_index,
-    SUM(humidity = '') AS humidity_empty_ct,
+    SUM(humidity = '' OR humidity IS NULL) AS humidity_empty_ct,
     COUNT(humidity) AS humidity_ct,
-    SUM(temperature = '') AS temperature_empty_ct,
+    SUM(temperature = '' OR humidity IS NULL) AS temperature_empty_ct,
     COUNT(temperature) AS temperature_ct
 	FROM staging_purpleair_sensor_data
 	GROUP BY sensor_index
@@ -62,11 +105,23 @@ FROM (
 WHERE humidity_empty_ct > 0 OR temperature_empty_ct > 0
 ORDER BY humidity_empty_pct DESC, temperature_empty_pct DESC;
 
+# Get amount of empty humidity or temperature values
+SELECT COUNT(*)
+FROM staging_purpleair_sensor_data
+WHERE humidity = '' OR humidity IS NULL OR temperature = '' OR temperature IS NULL;
+
 # Removing empty humidity and temperature rows
 DELETE FROM staging_purpleair_sensor_data
 WHERE humidity = '' OR humidity IS NULL OR temperature = '' OR temperature IS NULL;
 
-# Look at what sensors are primary culprits
+# Get rid of rows that no longer appear in the data file
+DELETE FROM staging_purpleair_sensors
+WHERE sensor_index NOT IN (
+	SELECT DISTINCT sensor_index FROM staging_purpleair_sensor_data
+);
+
+# Look at what sensors are primary culprits for missing values in the atm b column 
+# and cf1 b c column
 SELECT sensor_index,
 SUM(`pm2.5_atm_b` IS NULL OR TRIM(`pm2.5_atm_b`) = '') AS pm25_atm_b_bad_rows,
 SUM(`pm2.5_cf_1_b` IS NULL OR TRIM(`pm2.5_cf_1_b`) = '') AS pm25_cf_1_b_bad_rows
@@ -98,6 +153,9 @@ WHERE sensor_index IN (
        OR (`pm2.5_cf_1_b` IS NULL OR TRIM(`pm2.5_cf_1_b`) = '')
   ) s
 );
+
+
+
 
 # Personal computer uses the eastern time zone for the OS, so need to set it to UTC to avoid the
 # earliest return data from appearing as if it was taken on 12/31/2024
