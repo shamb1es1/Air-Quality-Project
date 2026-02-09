@@ -38,7 +38,8 @@ FIELDS TERMINATED BY ','
 OPTIONALLY ENCLOSED BY '"'
 IGNORE 1 LINES
 (time_stamp, humidity, temperature, `pm2.5_atm_a`, `pm2.5_atm_b`, `pm2.5_cf_1_a`,
-`pm2.5_cf_1_b`, sensor_index);
+`pm2.5_cf_1_b`, @sensor_index)
+SET sensor_index = REPLACE(TRIM(@sensor_index), '\r', '');
 
 DROP TABLE IF EXISTS staging_airnow_sensor_data;
 CREATE TABLE staging_airnow_sensor_data (

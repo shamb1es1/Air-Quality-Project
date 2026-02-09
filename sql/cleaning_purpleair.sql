@@ -21,43 +21,24 @@ WHERE sensor_index NOT REGEXP '^[0-9]+$' OR uptime NOT REGEXP '^[0-9]+$';
 SELECT d.sensor_index, COUNT(*) AS row_ct
 FROM staging_purpleair_sensor_data d
 LEFT JOIN staging_purpleair_sensors s
-ON s.sensor_index = d.sensor_index
+ON d.sensor_index = s.sensor_index
 WHERE s.sensor_index IS NULL
 GROUP BY d.sensor_index;
 
-# Check what sensor_index's appear in the  sensory data set that don't appear
+# Check what sensor_index's appear in the sensory data set that don't appear
 # in the sensor history data set
 SELECT s.sensor_index
 FROM staging_purpleair_sensors s
 LEFT JOIN staging_purpleair_sensor_data d
-ON d.sensor_index = s.sensor_index
+ON s.sensor_index = d.sensor_index
 WHERE d.sensor_index IS NULL;
 
 # Delete the unused sensors
-DELETE FROM staging_purpleair_sensors
-WHERE sensor_index IN (
-  SELECT sensor_index
-  FROM (
-    SELECT s.sensor_index
-    FROM staging_purpleair_sensors s
-    LEFT JOIN staging_purpleair_sensor_data d
-      ON d.sensor_index = s.sensor_index
-    WHERE d.sensor_index IS NULL
-  ) x
-);
-
-SELECT s.sensor_index, COUNT(*) AS row_ct
-FROM staging_purpleair_sensor_data d
-RIGHT JOIN staging_purpleair_sensors s
-ON s.sensor_index = d.sensor_index
-WHERE d.sensor_index IS NULL
-GROUP BY s.sensor_index;
-
-select distinct sensor_index
-from staging_purpleair_sensor_data
-where sensor_index like '%\r';
-
-select * from staging_purpleair_sensors where sensor_index = 3771;
+DELETE s 
+FROM staging_purpleair_sensors s 
+LEFT JOIN staging_purpleair_sensor_data d
+ON d.sensor_index = s.sensor_index
+WHERE d.sensor_index IS NULL;
 
 # All latitude and longitude values valid
 SELECT latitude, longitude
@@ -86,12 +67,9 @@ FROM staging_purpleair_sensor_data;
 # Look at what proportion of an indexes humidity and temperature values are not
 # appearing
 SELECT
-  sensor_index,
-  humidity_empty_ct,
-  humidity_ct,
+  sensor_index, humidity_empty_ct, humidity_ct,
   ROUND(100*humidity_empty_ct/NULLIF(humidity_ct, 0),1) AS humidity_empty_pct,
-  temperature_empty_ct,
-  temperature_ct,
+  temperature_empty_ct, temperature_ct,
   ROUND(100*temperature_empty_ct/NULLIF(temperature_ct, 0),1) AS temperature_empty_pct
 FROM (
 	SELECT sensor_index,
@@ -105,11 +83,6 @@ FROM (
 WHERE humidity_empty_ct > 0 OR temperature_empty_ct > 0
 ORDER BY humidity_empty_pct DESC, temperature_empty_pct DESC;
 
-# Get amount of empty humidity or temperature values
-SELECT COUNT(*)
-FROM staging_purpleair_sensor_data
-WHERE humidity = '' OR humidity IS NULL OR temperature = '' OR temperature IS NULL;
-
 # Removing empty humidity and temperature rows
 DELETE FROM staging_purpleair_sensor_data
 WHERE humidity = '' OR humidity IS NULL OR temperature = '' OR temperature IS NULL;
@@ -121,13 +94,14 @@ WHERE sensor_index NOT IN (
 );
 
 # Look at what sensors are primary culprits for missing values in the atm b column 
-# and cf1 b c column
+# and cf1 b column
 SELECT sensor_index,
 SUM(`pm2.5_atm_b` IS NULL OR TRIM(`pm2.5_atm_b`) = '') AS pm25_atm_b_bad_rows,
-SUM(`pm2.5_cf_1_b` IS NULL OR TRIM(`pm2.5_cf_1_b`) = '') AS pm25_cf_1_b_bad_rows
+SUM(`pm2.5_cf_1_b` IS NULL OR TRIM(`pm2.5_cf_1_b`) = '') AS pm25_cf_1_b_bad_rows,
+COUNT(*) AS total_rows
 FROM staging_purpleair_sensor_data 
 GROUP BY sensor_index
-HAVING pm25_atm_b_bad_rows > 1 OR pm25_cf_1_b_bad_rows > 1;
+HAVING pm25_atm_b_bad_rows > 0 OR pm25_cf_1_b_bad_rows > 0;
 
 # Because there are only 2 sensors that have missing data in these categories, it's
 # easier to delete those sensors from the data set in case they are faulty overall
@@ -142,7 +116,7 @@ WHERE sensor_index IN (
   ) s
 );
 
-# Delete possibly fault sensor data from above
+# Delete possibly faulty sensor data from above
 DELETE FROM staging_purpleair_sensor_data
 WHERE sensor_index IN (
   SELECT sensor_index
@@ -163,24 +137,6 @@ WHERE sensor_index IN (
 # same datetime bucket due to daylight savings
 SET SESSION time_zone = '+00:00';
 
-# Verify unix timecode converts to 1/1/2025 00:00:00.00 in sensor csv
-(SELECT date_created AS unix_ts, FROM_UNIXTIME(date_created) AS converted_ts,
-'date_created' AS source_col
-FROM staging_purpleair_sensors
-ORDER BY date_created ASC
-LIMIT 5)
-UNION ALL
-(SELECT last_seen AS unix_ts, FROM_UNIXTIME(last_seen) AS converted_ts,
-'last_seen' AS source_col
-FROM staging_purpleair_sensors
-ORDER BY last_seen ASC
-LIMIT 5);
-
-# Verify unix timecode converts to 1/1/2025 00:00:00.00 in sensor data csv
-SELECT time_stamp, from_unixtime(time_stamp) AS dt FROM staging_purpleair_sensor_data
-ORDER BY dt asc
-LIMIT 5;
-
 # Verify all ints convertable to a unix time in sensor csv
 SELECT date_created, last_seen
 FROM staging_purpleair_sensors
@@ -191,7 +147,10 @@ SELECT time_stamp
 FROM staging_purpleair_sensor_data
 WHERE FROM_UNIXTIME(time_stamp) IS NULL;
 
-SELECT FROM_UNIXTIME(time_stamp) from staging_purpleair_sensor_data;
+# Verify unix timecode converts to 1/1/2025 00:00:00.00 in sensor data csv
+SELECT time_stamp, from_unixtime(time_stamp) AS dt FROM staging_purpleair_sensor_data
+ORDER BY dt asc
+LIMIT 5;
 
 ##### NEW COLUMNS
 
@@ -229,26 +188,3 @@ SELECT sensor_index, datetime_timestamp, COUNT(*)
 FROM staging_purpleair_sensor_data
 GROUP BY sensor_index, datetime_timestamp
 HAVING COUNT(*) > 1;
-
-# Was used for evaluating previous time bucketing error
-SELECT *
-FROM staging_purpleair_sensor_data
-WHERE (sensor_index, datetime_timestamp) IN (
-	SELECT sensor_index, datetime_timestamp
-	FROM (
-		SELECT sensor_index, datetime_timestamp, COUNT(*)
-		FROM staging_purpleair_sensor_data
-		GROUP BY sensor_index, datetime_timestamp
-		HAVING COUNT(*) > 1
-	) i
-)
-ORDER BY sensor_index, datetime_timestamp;
-
-# Verfied the timestamps that were getting bucketed to the same datetime are now
-# split
-SELECT
-  time_stamp,
-  FROM_UNIXTIME(time_stamp) AS dt
-FROM staging_purpleair_sensor_data
-WHERE time_stamp IN (1762059600, 1762063200)
-LIMIT 20;
