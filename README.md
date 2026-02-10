@@ -202,3 +202,132 @@ CAST(DATE_FORMAT(FROM_UNIXTIME(time_stamp),'%Y-%m-%d %H:00:00') AS DATETIME);
 
 #### Part 2: AirNow
 
+The columns agencyname, parameter, unit, and intlaqscode have distinct values, and parameter and unit are always PM2.5 and UG/M3 respectively... All columns can be dropped
+
+```
+ALTER TABLE staging_airnow_sensor_data
+DROP COLUMN agencyname,
+DROP COLUMN parameter,
+DROP COLUMN intlaqscode,
+DROP COLUMN unit;
+```
+
+Category aligns with binned api values, can use case statements to rebuild
+
+```
+ALTER TABLE staging_airnow_sensor_data
+DROP COLUMN category;
+```
+
+479 rows were found with missing or invalid values in value and aqi, and 2993 in rawconcentration (AirNow designates a -999 value as missinf or invalid)
+
+```
+SELECT COUNT(*) FROM staging_airnow_sensor_data WHERE `value` = '-999'
+UNION ALL
+SELECT COUNT(*) FROM staging_airnow_sensor_data WHERE rawconcentration = '-999'
+UNION ALL
+SELECT COUNT(*) FROM staging_airnow_sensor_data WHERE aqi = '-999';
+```
+
+Create the datetime column that will be used to match the datetime column in the PurpleAir data table
+
+```
+ALTER TABLE staging_airnow_sensor_data
+ADD COLUMN datetime_timestamp DATETIME;
+```
+```
+UPDATE staging_airnow_sensor_data
+SET datetime_timestamp = STR_TO_DATE(REPLACE(utc, 'T', ' '), '%Y-%m-%d %H:%i');
+```
+
+## Final tables and insertion
+
+```
+DROP TABLE IF EXISTS purpleair_sensors;
+CREATE TABLE purpleair_sensors (
+	sensor_index INT PRIMARY KEY,
+    datetime_date_created DATETIME NOT NULL,
+    datetime_last_seen DATETIME NOT NULL,
+    `name` VARCHAR(255),
+    latitude DECIMAL(9, 6) NOT NULL,
+    longitude DECIMAL(9, 6) NOT NULL,
+    CHECK (latitude BETWEEN -90 AND 90),
+    CHECK (longitude BETWEEN -180 AND 180)
+);
+
+INSERT INTO purpleair_sensors (
+    sensor_index, datetime_date_created, datetime_last_seen, `name`, latitude, longitude
+)
+SELECT sensor_index, datetime_date_created, datetime_last_seen, `name`, latitude, longitude
+FROM staging_purpleair_sensors;
+
+DROP TABLE IF EXISTS purpleair_sensor_data;
+CREATE TABLE purpleair_sensor_data (
+	sensor_index INT NOT NULL,
+    datetime_timestamp DATETIME NOT NULL,
+    humidity DECIMAL(5, 2) NOT NULL,
+    temperature DECIMAL(5, 2) NOT NULL, 
+    `pm2.5_atm_a` DECIMAL(7, 2) NOT NULL,
+	`pm2.5_atm_b` DECIMAL(7, 2) NOT NULL,
+    `pm2.5_cf_1_a` DECIMAL(7, 2) NOT NULL,
+    `pm2.5_cf_1_b` DECIMAL(7, 2) NOT NULL,
+    PRIMARY KEY (sensor_index, datetime_timestamp),
+    FOREIGN KEY (sensor_index) REFERENCES purpleair_sensors(sensor_index) ON DELETE CASCADE,
+    CHECK (`pm2.5_atm_a` >= 0),
+    CHECK (`pm2.5_atm_b` >= 0),
+    CHECK (`pm2.5_cf_1_a` >= 0),
+    CHECK (`pm2.5_cf_1_b` >= 0)
+);
+
+INSERT INTO purpleair_sensor_data (
+	sensor_index, datetime_timestamp, humidity, temperature, `pm2.5_atm_a`, `pm2.5_atm_b`,
+    `pm2.5_cf_1_a`, `pm2.5_cf_1_b`
+)
+SELECT sensor_index, datetime_timestamp, humidity, temperature, `pm2.5_atm_a`, `pm2.5_atm_b`,
+`pm2.5_cf_1_a`, `pm2.5_cf_1_b`
+FROM staging_purpleair_sensor_data;
+
+DROP TABLE IF EXISTS airnow_sites;
+CREATE TABLE airnow_sites (
+	site_id BIGINT AUTO_INCREMENT,
+    latitude  DECIMAL(9,6) NOT NULL,
+	longitude DECIMAL(9,6) NOT NULL,
+	fullaqscode BIGINT NOT NULL,
+    site_name VARCHAR(255) NOT NULL DEFAULT 'N/A',
+    PRIMARY KEY (site_id),
+    UNIQUE (latitude, longitude)
+);
+
+INSERT INTO airnow_sites (latitude, longitude, fullaqscode, site_name)
+SELECT
+  ROUND(CAST(d.latitude  AS DECIMAL(8,6)), 6)  AS latitude,
+  ROUND(CAST(d.longitude AS DECIMAL(9,6)), 6) AS longitude,
+  MIN(d.fullaqscode) AS fullaqscode,
+  MIN(d.sitename)    AS site_name
+FROM staging_airnow_sensor_data d
+GROUP BY
+  ROUND(CAST(d.latitude  AS DECIMAL(8,6)), 6),
+  ROUND(CAST(d.longitude AS DECIMAL(9,6)), 6);
+
+DROP TABLE IF EXISTS airnow_sensor_data;
+CREATE TABLE airnow_sensor_data (
+	site_id BIGINT NOT NULL,
+	datetime_timestamp DATETIME NOT NULL,
+	fullaqscode BIGINT NOT NULL,
+    pm25_nowcast_value DECIMAL(6, 2) NOT NULL,
+    pm25_raw_concentration DECIMAL(6, 2) NOT NULL,
+    PRIMARY KEY (site_id, datetime_timestamp),
+    FOREIGN KEY (site_id) REFERENCES airnow_sites(site_id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+INSERT INTO airnow_sensor_data (
+site_id, datetime_timestamp, pm25_nowcast_value, pm25_raw_concentration, fullaqscode)
+SELECT DISTINCT s.site_id, d.utc, CAST(d.`value` AS DECIMAL(6,2)),
+CAST(d.rawconcentration AS DECIMAL(6,2)), d.fullaqscode
+FROM staging_airnow_sensor_data d
+JOIN airnow_sites s
+ON s.latitude  = ROUND(CAST(d.latitude AS DECIMAL(9,6)), 6)
+AND s.longitude = ROUND(CAST(d.longitude AS DECIMAL(9,6)), 6);
+```
+
+The only additional 

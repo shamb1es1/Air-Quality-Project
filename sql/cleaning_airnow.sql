@@ -8,18 +8,18 @@ DROP COLUMN parameter,
 DROP COLUMN intlaqscode,
 DROP COLUMN unit;
 
-# category aligns with binned api values, can use case statements to rebuild
+# Category aligns with binned api values, can use case statements to rebuild
 ALTER TABLE staging_airnow_sensor_data
 DROP COLUMN category;
 
 ##### DROP BAD SENSOR READINGS
 
 # 479 rows with missing or invalid value in value and aqi, and 2993 in rawconcentration
-SELECT COUNT(`value`) FROM staging_airnow_sensor_data WHERE `value` = '-999'
+SELECT COUNT(*) FROM staging_airnow_sensor_data WHERE `value` = '-999'
 UNION ALL
-SELECT COUNT(rawconcentration) FROM staging_airnow_sensor_data WHERE rawconcentration = '-999'
+SELECT COUNT(*) FROM staging_airnow_sensor_data WHERE rawconcentration = '-999'
 UNION ALL
-SELECT COUNT(aqi) FROM staging_airnow_sensor_data WHERE aqi = '-999';
+SELECT COUNT(*) FROM staging_airnow_sensor_data WHERE aqi = '-999';
 
 # Delete all -999 rows
 DELETE FROM staging_airnow_sensor_data
@@ -66,6 +66,8 @@ SELECT DISTINCT sitename
 FROM staging_airnow_sensor_data
 WHERE fullaqscode = 840340000000;
 
+select distinct fullaqscode, sitename, latitude, longitude from staging_airnow_sensor_data;
+
 # Personal computer uses the eastern time zone for the OS, so need to set it to UTC to avoid the
 # earliest return data from appearing as if it was taken on 12/31/2024
 SET time_zone = '+00:00';
@@ -77,10 +79,14 @@ WHERE utc NOT REGEXP '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}$';
 
 ##### NEW COLUMNS
 
-# Create datetime_utc column
+# Create datetime_timestamp column
 ALTER TABLE staging_airnow_sensor_data
-ADD COLUMN datetime_utc DATETIME;
+ADD COLUMN datetime_timestamp DATETIME;
 
 # Change date format
 UPDATE staging_airnow_sensor_data
-SET datetime_utc = STR_TO_DATE(REPLACE(utc, 'T', ' '), '%Y-%m-%d %H:%i');
+SET datetime_timestamp = STR_TO_DATE(REPLACE(utc, 'T', ' '), '%Y-%m-%d %H:%i');
+
+DELETE FROM staging_airnow_sensor_data
+WHERE sitename = 'Pennsauken PM' AND utc = '2025-01-01T01:00'
+AND CAST(longitude AS DECIMAL(10,6)) = -75.050000;

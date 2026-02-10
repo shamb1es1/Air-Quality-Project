@@ -1,3 +1,37 @@
+# Function to get the distance between PurpleAir and AirNow sensors in miles
+DELIMITER $$
+CREATE FUNCTION haversine_miles (
+    lat1 DOUBLE, lon1 DOUBLE, lat2 DOUBLE, lon2 DOUBLE
+)
+RETURNS DOUBLE
+DETERMINISTIC
+BEGIN
+    DECLARE earth_radius DOUBLE DEFAULT 3959;
+    RETURN earth_radius * 2 * ASIN(SQRT(
+        POW(SIN(RADIANS(lat2 - lat1) / 2), 2) +
+        COS(RADIANS(lat1)) * COS(RADIANS(lat2)) *
+        POW(SIN(RADIANS(lon2 - lon1) / 2), 2)
+    ));
+END$$
+DELIMITER ;
+
+# View that calculates distances between all sensors in each data set
+CREATE OR REPLACE VIEW v_pa_airnow_distances AS
+SELECT p.sensor_index, a.site_id,
+haversine_miles(p.latitude, p.longitude, a.latitude, a.longitude) AS dist_miles
+FROM purpleair_sensors p
+CROSS JOIN airnow_sites a;
+
+select * from v_pa_to_airnow_nearest;
+
+
+
+
+
+
+
+
+
 # Check where PM2.5 values are 0
 SELECT SUM(`pm2.5_atm_a` = 0) AS '0_pm2.5_atm_a', SUM(`pm2.5_atm_b` = 0) AS '0_pm2.5_atm_b',
 SUM(`pm2.5_cf_1_a` = 0) AS '0_pm2.5_cf_1_a', SUM(`pm2.5_cf_1_b` = 0) AS '0_pm2.5_cf_1_b'
