@@ -240,6 +240,10 @@ UPDATE staging_airnow_sensor_data
 SET datetime_timestamp = STR_TO_DATE(REPLACE(utc, 'T', ' '), '%Y-%m-%d %H:%i');
 ```
 
+Something that was discovered in the final table creation stage was a single AirNow entry that presumably had a rounded or truncated longitude value that caused the entry to create an entire new entry in airnow_sites table
+
+This value was off by a 
+
 ## Final tables and insertion
 
 ```
@@ -330,4 +334,5 @@ ON s.latitude  = ROUND(CAST(d.latitude AS DECIMAL(9,6)), 6)
 AND s.longitude = ROUND(CAST(d.longitude AS DECIMAL(9,6)), 6);
 ```
 
-The only additional 
+## Analysis
+

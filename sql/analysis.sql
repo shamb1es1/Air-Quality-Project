@@ -1,4 +1,5 @@
 # Function to get the distance between PurpleAir and AirNow sensors in miles
+DROP FUNCTION IF EXISTS haversine_miles;
 DELIMITER $$
 CREATE FUNCTION haversine_miles (
     lat1 DOUBLE, lon1 DOUBLE, lat2 DOUBLE, lon2 DOUBLE
@@ -16,18 +17,86 @@ END$$
 DELIMITER ;
 
 # View that calculates distances between all sensors in each data set
-CREATE OR REPLACE VIEW v_pa_airnow_distances AS
+CREATE OR REPLACE VIEW sensor_distances AS
 SELECT p.sensor_index, a.site_id,
-haversine_miles(p.latitude, p.longitude, a.latitude, a.longitude) AS dist_miles
+ROUND(haversine_miles(p.latitude, p.longitude, a.latitude, a.longitude),2) AS dist_miles
 FROM purpleair_sensors p
 CROSS JOIN airnow_sites a;
 
-select * from v_pa_to_airnow_nearest;
+# Procedure to group each PM2.5 values in their corresponding AQI group
+DROP PROCEDURE IF EXISTS pm25_averages;
+DELIMITER //
+CREATE PROCEDURE pm25_averages (IN pm25col VARCHAR(64), IN which_table VARCHAR(64))
+BEGIN
+	SET @colquer = CONCAT('
+    SELECT AQI, COUNT(*) AS row_count,
+    ROUND(100 * COUNT(*) / SUM(COUNT(*)) OVER (), 2) AS pct_of_total
+	FROM (
+		SELECT CASE WHEN ', pm25col, ' <= 50 THEN "Good"
+		WHEN ', pm25col, ' BETWEEN 50.1 AND 100 THEN "Moderate"
+		WHEN ', pm25col, ' BETWEEN 100.1 AND 150 THEN "Unhealthy for Sensitive Groups"
+		WHEN ', pm25col, ' BETWEEN 150.1 AND 200 THEN "Unhealthy"
+		WHEN ', pm25col, ' BETWEEN 200.1 AND 300 THEN "Very Unhealthy"
+		ELSE "Hazardous" END AS AQI
+		FROM ', which_table,'
+		) i
+	GROUP BY AQI
+    ORDER BY FIELD(AQI, "Good","Moderate","Unhealthy for Sensitive Groups",
+    "Unhealthy","Very Unhealthy","Hazardous"
+)
+    ');
+	PREPARE getavg FROM @colquer;
+    EXECUTE getavg;
+    DEALLOCATE PREPARE getavg;
+END //
+DELIMITER ;
+
+# All column categories in both datasets show that vast majority of their observations
+# are in the "Good" AQI need for concern category (all 97%+)
+# A noticable difference in the PurpleAir and AirNow percentages is that the hazardous
+# category (the most extreme) is the second most populated in all columns for
+# PurpleAir, with the other ascendingly extreme categories tapering off in volume 
+CALL pm25_averages('pm25_atm_a', 'purpleair_sensor_data');
+CALL pm25_averages('pm25_atm_b', 'purpleair_sensor_data');
+CALL pm25_averages('pm25_cf_1_a', 'purpleair_sensor_data');
+CALL pm25_averages('pm25_cf_1_b', 'purpleair_sensor_data');
+CALL pm25_averages('pm25_nowcast_value', 'airnow_sensor_data');
+CALL pm25_averages('pm25_raw_concentration', 'airnow_sensor_data');
+
+DROP PROCEDURE IF EXISTS correlation;
+DELIMITER //
+CREATE PROCEDURE correlation (IN x VARCHAR(11), IN y VARCHAR(11), 
+IN which_table VARCHAR(64))
+BEGIN
+	SET @corrquer = CONCAT(
+        'SELECT ', x, ', ', y, ',
+        (AVG(', x, ' * ', y, ') - 
+         AVG(', x, ') * AVG(', y, ')) /
+        (
+         SQRT(AVG(', x, ' * ', x, ') - POW(AVG(', x, '), 2)) *
+         SQRT(AVG(', y, ' * ', y, ') - POW(AVG(', y, '), 2))
+        ) AS correlation_coefficient
+        FROM ', which_table
+    );
+
+    PREPARE getcorr FROM @corrquer;
+    EXECUTE getcorr;
+    DEALLOCATE PREPARE getcorr;
+END //
+DELIMITER ;
+
+CALL correlation('pm25_atm_a', 'pm25_atm_b', 'purpleair_sensor_data');
+
+select * from purpleair_sensor_data limit 10;
 
 
 
 
 
+
+select * from airnow_sites;
+
+select * from airnow_sensor_data limit 50;
 
 
 
