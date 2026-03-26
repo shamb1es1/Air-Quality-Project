@@ -1,0 +1,25 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["airnow_sensor_data","purpleair_sensor_data","purpleair_sensors"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table airnow_sensor_data
+ref table DateTableTemplate_0a1b3d63-f6d6-423b-bf4a-1f3c3e6b984f
+ref table LocalDateTable_1e3b9b77-6efe-498d-bdc9-4a9f4554c979
+ref table purpleair_sensor_data
+ref table purpleair_sensors
+ref table date_table
+ref table LocalDateTable_f6635199-4a5e-499c-b091-7e77d8d41136
+ref table formula_selector
+
+ref cultureInfo en-US
+

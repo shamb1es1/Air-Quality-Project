@@ -1,0 +1,79 @@
+table purpleair_sensors
+	lineageTag: ad848229-3c0d-463e-8741-67a21866c289
+
+	column sensor_index
+		dataType: int64
+		formatString: 0
+		lineageTag: 82aeff4c-3a29-42f0-a781-c75d1cf16856
+		summarizeBy: none
+		sourceColumn: sensor_index
+
+		annotation SummarizationSetBy = Automatic
+
+	column date_created
+		dataType: int64
+		formatString: 0
+		lineageTag: 951c3463-0c9a-4707-8c72-3e45ff90f86d
+		summarizeBy: none
+		sourceColumn: date_created
+
+		annotation SummarizationSetBy = Automatic
+
+	column last_seen
+		dataType: int64
+		formatString: 0
+		lineageTag: ceab2e44-f2bd-44b8-8a14-ee3b7787507c
+		summarizeBy: none
+		sourceColumn: last_seen
+
+		annotation SummarizationSetBy = Automatic
+
+	column name
+		dataType: string
+		lineageTag: 4a9bc9fa-2757-4a46-9d38-d04db3750873
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+	column uptime
+		dataType: int64
+		formatString: 0
+		lineageTag: fa074d08-fe4a-46ef-b5db-7fdaa6e2c2d2
+		summarizeBy: none
+		sourceColumn: uptime
+
+		annotation SummarizationSetBy = Automatic
+
+	column latitude
+		dataType: double
+		lineageTag: 52bd4d90-7636-4998-8d58-6c0b3d80cd11
+		summarizeBy: none
+		sourceColumn: latitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column longitude
+		dataType: double
+		lineageTag: a03c7f09-b72d-406a-be6a-c017d1ece72a
+		summarizeBy: none
+		sourceColumn: longitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition purpleair_sensors = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\juwri\Downloads\Air Quality Project\data\purpleair_sensors.csv"),[Delimiter=",", Columns=7, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"sensor_index", Int64.Type}, {"date_created", Int64.Type}, {"last_seen", Int64.Type}, {"name", type text}, {"uptime", Int64.Type}, {"latitude", type number}, {"longitude", type number}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,87 @@
+table date_table
+	lineageTag: 5858e9e9-5c0d-41a1-a854-878d0e934806
+
+	column year
+		formatString: 0
+		lineageTag: af3e284f-451d-4795-8da9-38662d88889f
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column day
+		formatString: 0
+		lineageTag: a9f29e0b-65dd-4a9c-a7cb-6c64649378ed
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [day]
+
+		annotation SummarizationSetBy = Automatic
+
+	column monthName
+		lineageTag: 2f7d661a-9c5c-49f6-8f45-84782c9c1c29
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [monthName]
+
+		annotation SummarizationSetBy = Automatic
+
+	column hour
+		formatString: 0
+		lineageTag: caf31534-98bc-43ac-8d43-f8ddaec13dae
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [hour]
+
+		annotation SummarizationSetBy = Automatic
+
+	column utcdt
+		formatString: General Date
+		lineageTag: b6231b55-ef02-4e28-aca5-a2b9885256a0
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [utcdt]
+
+		variation Variation
+			isDefault
+			relationship: ebf60b95-a089-4fbf-a26d-2892d27a2474
+			defaultHierarchy: LocalDateTable_f6635199-4a5e-499c-b091-7e77d8d41136.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column month_num
+		formatString: 0
+		lineageTag: 26aa7f52-2f70-4a79-9422-3b2bcaab7bde
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [month_num]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition date_table = calculated
+		mode: import
+		source =
+				
+				ADDCOLUMNS(
+				    DISTINCT(
+				        UNION(
+				            SELECTCOLUMNS(
+				                purpleair_sensor_data,
+				                "utcdt", purpleair_sensor_data[utc]
+				            ),
+				            SELECTCOLUMNS(
+				                airnow_sensor_data,
+				                "utcdt", airnow_sensor_data[utc]
+				            )
+				        )
+				    ),
+				    "year", YEAR([utcdt]),
+				    "monthName", FORMAT([utcdt], "MMM"),
+				    "month_num", MONTH([utcdt]),
+				    "day", DAY([utcdt]),
+				    "hour", HOUR([utcdt])
+				)
+
+	annotation PBI_Id = 9f24a0c3429c46109ff9b991b1a4e00c
+

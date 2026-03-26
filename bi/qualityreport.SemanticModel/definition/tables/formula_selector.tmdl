@@ -1,0 +1,25 @@
+table formula_selector
+	lineageTag: 5746c957-9719-49fb-b5d8-b1d25661cda9
+
+	column Formula
+		lineageTag: 007c7b8d-48f3-4986-bdd7-b68eeadd6431
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Formula]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition formula_selector = calculated
+		mode: import
+		source =
+				
+				DATATABLE(
+				    "Formula", STRING,
+				    {
+				        {"CF1"},
+				        {"ATM"}
+				    }
+				)
+
+	annotation PBI_Id = ae1542b989524522864ce6aef090aafa
+

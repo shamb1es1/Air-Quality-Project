@@ -1,0 +1,138 @@
+table airnow_sensor_data
+	lineageTag: 0607e4ce-2be2-4263-9833-43c3cc236025
+
+	column latitude
+		dataType: double
+		lineageTag: 74ed1992-76fa-4872-b1be-e5491042f79d
+		summarizeBy: sum
+		sourceColumn: latitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column longitude
+		dataType: double
+		lineageTag: 9c010e40-afee-4f68-ab4c-ef88f86a9f07
+		summarizeBy: sum
+		sourceColumn: longitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column utc
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 3cfb640f-e729-410b-9a6d-8a664db2c2e2
+		summarizeBy: none
+		sourceColumn: utc
+
+		annotation SummarizationSetBy = Automatic
+
+	column parameter
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 199c1a45-9654-4823-95f0-78516ff6aec8
+		summarizeBy: none
+		sourceColumn: parameter
+
+		variation Variation
+			isDefault
+			relationship: 057b121f-f41f-4fcd-805e-11d58d050cac
+			defaultHierarchy: LocalDateTable_1e3b9b77-6efe-498d-bdc9-4a9f4554c979.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column unit
+		dataType: string
+		lineageTag: 6e5f5029-a90b-4499-8010-81bc55c2f96a
+		summarizeBy: none
+		sourceColumn: unit
+
+		annotation SummarizationSetBy = Automatic
+
+	column value
+		dataType: double
+		lineageTag: f999b1f6-3908-47ab-a739-35659c60ae08
+		summarizeBy: sum
+		sourceColumn: value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column rawconcentration
+		dataType: double
+		lineageTag: 2c6df831-a3a8-4bda-becb-d230c4f0da47
+		summarizeBy: sum
+		sourceColumn: rawconcentration
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column aqi
+		dataType: int64
+		formatString: 0
+		lineageTag: 57179e11-6f48-4432-9416-ee2252d340cf
+		summarizeBy: sum
+		sourceColumn: aqi
+
+		annotation SummarizationSetBy = Automatic
+
+	column category
+		dataType: int64
+		formatString: 0
+		lineageTag: b904eecf-b367-4a3f-b220-5332315c5970
+		summarizeBy: sum
+		sourceColumn: category
+
+		annotation SummarizationSetBy = Automatic
+
+	column sitename
+		dataType: string
+		lineageTag: 11a34bae-7e40-4202-9513-a1eb51fdb5eb
+		summarizeBy: none
+		sourceColumn: sitename
+
+		annotation SummarizationSetBy = Automatic
+
+	column agencyname
+		dataType: string
+		lineageTag: 5426c8df-418d-42a5-9aea-8b93af0dbf21
+		summarizeBy: none
+		sourceColumn: agencyname
+
+		annotation SummarizationSetBy = Automatic
+
+	column fullaqscode
+		dataType: int64
+		formatString: 0
+		lineageTag: 9bf8cf60-b78d-42c0-9dd8-31fa9d3d8712
+		summarizeBy: sum
+		sourceColumn: fullaqscode
+
+		annotation SummarizationSetBy = Automatic
+
+	column intlaqscode
+		dataType: int64
+		formatString: 0
+		lineageTag: 3e3b3740-a38a-4509-91bf-727dedd67cf1
+		summarizeBy: sum
+		sourceColumn: intlaqscode
+
+		annotation SummarizationSetBy = Automatic
+
+	partition airnow_sensor_data = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\juwri\Downloads\Air Quality Project\data\airnow_sensor_data.csv"),[Delimiter=",", Columns=13, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"latitude", type number}, {"longitude", type number}, {"utc", type datetime}, {"parameter", type datetime}, {"unit", type text}, {"value", type number}, {"rawconcentration", type number}, {"aqi", Int64.Type}, {"category", Int64.Type}, {"sitename", type text}, {"agencyname", type text}, {"fullaqscode", Int64.Type}, {"intlaqscode", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+

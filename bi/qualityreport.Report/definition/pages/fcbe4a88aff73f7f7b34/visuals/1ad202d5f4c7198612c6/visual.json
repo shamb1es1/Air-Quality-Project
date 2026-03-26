@@ -1,0 +1,218 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "1ad202d5f4c7198612c6",
+  "position": {
+    "x": 16.666666666666668,
+    "y": 172.91666666666669,
+    "z": 0,
+    "height": 285.41666666666669,
+    "width": 341.66666666666669,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "map",
+    "query": {
+      "queryState": {
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "purpleair_sensor_data"
+                        }
+                      },
+                      "Property": "sensor_index"
+                    }
+                  },
+                  "Function": 5
+                }
+              },
+              "queryRef": "CountNonNull(purpleair_sensor_data.sensor_index)",
+              "nativeQueryRef": "Count of sensor_index"
+            }
+          ]
+        },
+        "X": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "purpleair_sensors"
+                    }
+                  },
+                  "Property": "longitude"
+                }
+              },
+              "queryRef": "purpleair_sensors.longitude",
+              "nativeQueryRef": "longitude"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "purpleair_sensors"
+                    }
+                  },
+                  "Property": "latitude"
+                }
+              },
+              "queryRef": "purpleair_sensors.latitude",
+              "nativeQueryRef": "latitude"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "mapStyles": [
+        {
+          "properties": {
+            "mapTheme": {
+              "expr": {
+                "Literal": {
+                  "Value": "'canvasLight'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "heatMap": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "categoryLabels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 1,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Count of readings by sensor index'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "3e8c549cd56549ea6ec3",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "purpleair_sensor_data"
+                  }
+                },
+                "Property": "sensor_index"
+              }
+            },
+            "Function": 5
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "1a7f9af1f9a35335d096",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "purpleair_sensors"
+              }
+            },
+            "Property": "longitude"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "9a3e02cf13136a296a72",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "purpleair_sensors"
+              }
+            },
+            "Property": "latitude"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

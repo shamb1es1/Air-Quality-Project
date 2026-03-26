@@ -1,0 +1,222 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "c899fb37ce6145bd1e2d",
+  "position": {
+    "x": 558.33333333333337,
+    "y": 120.83333333333334,
+    "z": 1000,
+    "height": 304.16666666666669,
+    "width": 720.83333333333337,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "lineChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "purpleair_sensor_data"
+                    }
+                  },
+                  "Property": "utc"
+                }
+              },
+              "queryRef": "purpleair_sensor_data.utc",
+              "nativeQueryRef": "utc",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "purpleair_sensor_data"
+                    }
+                  },
+                  "Property": "pm25_selected_a"
+                }
+              },
+              "queryRef": "purpleair_sensor_data.pm25_selected_a",
+              "nativeQueryRef": "pm25_selected_a"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "purpleair_sensor_data"
+                    }
+                  },
+                  "Property": "pm25_selected_b"
+                }
+              },
+              "queryRef": "purpleair_sensor_data.pm25_selected_b",
+              "nativeQueryRef": "pm25_selected_b"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "purpleair_sensor_data"
+                  }
+                },
+                "Property": "utc"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "purpleair_sensor_data"
+                    }
+                  },
+                  "Property": "formula_title"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dropShadow": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "preset": {
+              "expr": {
+                "Literal": {
+                  "Value": "'CenterLeft'"
+                }
+              }
+            },
+            "angle": {
+              "expr": {
+                "Literal": {
+                  "Value": "180L"
+                }
+              }
+            },
+            "shadowDistance": {
+              "expr": {
+                "Literal": {
+                  "Value": "10L"
+                }
+              }
+            },
+            "shadowBlur": {
+              "expr": {
+                "Literal": {
+                  "Value": "10L"
+                }
+              }
+            },
+            "shadowSpread": {
+              "expr": {
+                "Literal": {
+                  "Value": "3L"
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "70L"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 2,
+                      "Percent": 0.2
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "39d5ed2f73cf5b63bf7f",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "purpleair_sensor_data"
+              }
+            },
+            "Property": "utc"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "32ed0dbfc80f28e92418",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "purpleair_sensor_data"
+              }
+            },
+            "Property": "pm25_selected_a"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "40ca18abbb11d23c9af8",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "purpleair_sensor_data"
+              }
+            },
+            "Property": "pm25_selected_b"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

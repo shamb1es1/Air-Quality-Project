@@ -1,0 +1,160 @@
+table purpleair_sensor_data
+	lineageTag: a505f67a-e830-44a1-922a-1a4bbc87014b
+
+	measure 'avg_pm2.5' =
+			
+			AVERAGEX(
+			    purpleair_sensor_data,
+			    (purpleair_sensor_data[pm2.5_cf_1_a] + purpleair_sensor_data[pm2.5_cf_1_b]) / 2
+			)
+		lineageTag: c18bdbeb-8034-40b5-9cbf-5d1db0c5930a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure avg_humidity = AVERAGE(purpleair_sensor_data[humidity])
+		lineageTag: d74a06af-28cd-4189-b3a9-7053c6d80e81
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure pm25_selected_a =
+			
+			VAR SelectedFormula =
+			    SELECTEDVALUE(formula_selector[Formula], "CF1")
+			RETURN
+			    SWITCH(
+			        SelectedFormula,
+			        "CF1", AVERAGE(purpleair_sensor_data[pm2.5_cf_1_a]),
+			        "ATM", AVERAGE(purpleair_sensor_data[pm2.5_atm_a])
+			    )
+		lineageTag: 8b992945-f64e-44fc-804c-e0698b73593b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure pm25_selected_b =
+			
+			VAR SelectedFormula =
+			    SELECTEDVALUE(formula_selector[Formula], "CF1")
+			RETURN
+			    SWITCH(
+			        SelectedFormula,
+			        "CF1", AVERAGE(purpleair_sensor_data[pm2.5_cf_1_b]),
+			        "ATM", AVERAGE(purpleair_sensor_data[pm2.5_atm_b])
+			    )
+		lineageTag: afd2a050-406b-4bfc-bca0-b6d938bce2a3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure formula_title =
+			
+			VAR SelectedFormula =
+			    SELECTEDVALUE(formula_selector[Formula], "CF1")
+			RETURN
+			    "PM2.5 " & SelectedFormula & " A vs B"
+		lineageTag: c084dd6d-81b0-43cd-a45f-459e693f1a0a
+
+	column time_stamp
+		dataType: int64
+		formatString: 0
+		lineageTag: f7c96108-0413-49ed-b686-146811a3642c
+		summarizeBy: sum
+		sourceColumn: time_stamp
+
+		annotation SummarizationSetBy = Automatic
+
+	column humidity
+		dataType: int64
+		formatString: 0
+		lineageTag: f4574d2a-e87d-448c-8d72-ad2ad756cc92
+		summarizeBy: sum
+		sourceColumn: humidity
+
+		annotation SummarizationSetBy = Automatic
+
+	column temperature
+		dataType: int64
+		formatString: 0
+		lineageTag: 9d252800-03f7-4034-a170-1fd5176f857b
+		summarizeBy: sum
+		sourceColumn: temperature
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'pm2.5_atm_a'
+		dataType: double
+		lineageTag: 2f2aa475-e93f-4784-86c8-735c1d74515a
+		summarizeBy: sum
+		sourceColumn: pm2.5_atm_a
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'pm2.5_atm_b'
+		dataType: double
+		lineageTag: dcc26609-619c-4874-aacc-367c1275c30d
+		summarizeBy: sum
+		sourceColumn: pm2.5_atm_b
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'pm2.5_cf_1_a'
+		dataType: double
+		lineageTag: f5dd291e-0589-461b-a205-69f85a6018c4
+		summarizeBy: sum
+		sourceColumn: pm2.5_cf_1_a
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'pm2.5_cf_1_b'
+		dataType: double
+		lineageTag: 1b181976-f01c-4411-8072-d445db62f6c4
+		summarizeBy: sum
+		sourceColumn: pm2.5_cf_1_b
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column sensor_index
+		dataType: int64
+		formatString: 0
+		lineageTag: 5a5faae2-f06e-4d02-aafc-216ac5da67ba
+		summarizeBy: none
+		sourceColumn: sensor_index
+
+		annotation SummarizationSetBy = Automatic
+
+	column utc = DATE(1970,1,1) + (purpleair_sensor_data[time_stamp] / 86400)
+		formatString: General Date
+		lineageTag: aadca68d-6442-4ecd-9aaf-4d8fd0baf7c3
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'PM2.5 Avg Row' =
+			
+			(purpleair_sensor_data[pm2.5_cf_1_a] +
+			 purpleair_sensor_data[pm2.5_cf_1_b]) / 2
+		lineageTag: d2256380-d7f0-4e53-a921-89aa9531f559
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition purpleair_sensor_data = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\juwri\Downloads\Air Quality Project\data\purpleair_sensor_data.csv"),[Delimiter=",", Columns=8, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"time_stamp", Int64.Type}, {"humidity", Int64.Type}, {"temperature", Int64.Type}, {"pm2.5_atm_a", type number}, {"pm2.5_atm_b", type number}, {"pm2.5_cf_1_a", type number}, {"pm2.5_cf_1_b", type number}, {"sensor_index", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+

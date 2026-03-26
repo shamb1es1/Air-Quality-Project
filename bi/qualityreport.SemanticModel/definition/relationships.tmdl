@@ -1,0 +1,22 @@
+relationship 057b121f-f41f-4fcd-805e-11d58d050cac
+	joinOnDateBehavior: datePartOnly
+	fromColumn: airnow_sensor_data.parameter
+	toColumn: LocalDateTable_1e3b9b77-6efe-498d-bdc9-4a9f4554c979.Date
+
+relationship AutoDetected_fe7c28d7-5e4f-486c-9b0d-cd093e40fbc6
+	fromColumn: purpleair_sensor_data.sensor_index
+	toColumn: purpleair_sensors.sensor_index
+
+relationship ebf60b95-a089-4fbf-a26d-2892d27a2474
+	joinOnDateBehavior: datePartOnly
+	fromColumn: date_table.utcdt
+	toColumn: LocalDateTable_f6635199-4a5e-499c-b091-7e77d8d41136.Date
+
+relationship bf8bc18e-63e2-64b1-fa73-2b7a061d1f28
+	fromColumn: airnow_sensor_data.utc
+	toColumn: date_table.utcdt
+
+relationship da0f448f-45ab-5981-0be1-38561898f7f7
+	fromColumn: purpleair_sensor_data.utc
+	toColumn: date_table.utcdt
+
