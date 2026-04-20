@@ -20,3 +20,8 @@ relationship da0f448f-45ab-5981-0be1-38561898f7f7
 	fromColumn: purpleair_sensor_data.utc
 	toColumn: date_table.utcdt
 
+relationship 4cf8d70f-54b2-4949-b7f3-a5ba07b52c23
+	joinOnDateBehavior: datePartOnly
+	fromColumn: airnow_cleaned.datetime_timestamp
+	toColumn: LocalDateTable_b33b43a7-5a17-42bf-b3f0-f0888c3b6b39.Date
+

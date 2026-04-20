@@ -1,0 +1,98 @@
+table airnow_cleaned
+	lineageTag: d683d898-b4de-440f-ba1e-bee7ffaefefc
+
+	column site_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 47871cf8-3d43-4f54-82bf-6203f35df84c
+		summarizeBy: sum
+		sourceColumn: site_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column datetime_timestamp
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 91a9e0db-9eb3-4653-aa9e-51252ac13c12
+		summarizeBy: none
+		sourceColumn: datetime_timestamp
+
+		variation Variation
+			isDefault
+			relationship: 4cf8d70f-54b2-4949-b7f3-a5ba07b52c23
+			defaultHierarchy: LocalDateTable_b33b43a7-5a17-42bf-b3f0-f0888c3b6b39.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column fullaqscode
+		dataType: int64
+		formatString: 0
+		lineageTag: 99a7b12a-dc24-4082-a754-5442701d740a
+		summarizeBy: sum
+		sourceColumn: fullaqscode
+
+		annotation SummarizationSetBy = Automatic
+
+	column pm25_nowcast_value
+		dataType: double
+		lineageTag: f5bb5160-25a6-44e0-b0e2-ab87106279af
+		summarizeBy: sum
+		sourceColumn: pm25_nowcast_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column pm25_raw_concentration
+		dataType: double
+		lineageTag: 2971b5f2-75ac-45cf-8cf2-a0f9fb145c2e
+		summarizeBy: sum
+		sourceColumn: pm25_raw_concentration
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column latitude
+		dataType: double
+		lineageTag: c9a17dcd-d4b8-4868-be9c-db6cbfca9bc4
+		summarizeBy: sum
+		sourceColumn: latitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column longitude
+		dataType: double
+		lineageTag: 9470c099-e136-40a3-9039-01b63edcf793
+		summarizeBy: sum
+		sourceColumn: longitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column site_name
+		dataType: string
+		lineageTag: 1d0f3b23-a5da-4c00-bc9f-233f8d31ce66
+		summarizeBy: none
+		sourceColumn: site_name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition airnow_cleaned = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\juwri\Downloads\Air Quality Project\data\airnow_cleaned.csv"),[Delimiter=",", Columns=10, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"site_id", Int64.Type}, {"datetime_timestamp", type datetime}, {"fullaqscode", Int64.Type}, {"pm25_nowcast_value", type number}, {"pm25_raw_concentration", type number}, {"site_id_1", Int64.Type}, {"latitude", type number}, {"longitude", type number}, {"fullaqscode_2", Int64.Type}, {"site_name", type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"site_id_1", "fullaqscode_2"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
