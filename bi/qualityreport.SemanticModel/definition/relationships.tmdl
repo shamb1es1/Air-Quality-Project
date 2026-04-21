@@ -25,3 +25,8 @@ relationship 4cf8d70f-54b2-4949-b7f3-a5ba07b52c23
 	fromColumn: airnow_cleaned.datetime_timestamp
 	toColumn: LocalDateTable_b33b43a7-5a17-42bf-b3f0-f0888c3b6b39.Date
 
+relationship 43a33d81-d968-422d-bfe8-00f2eece3d35
+	joinOnDateBehavior: datePartOnly
+	fromColumn: purpleair_cleaned_wo_outliers.Column2
+	toColumn: LocalDateTable_04662912-12f8-4a90-8e27-97135564f2be.Date
+

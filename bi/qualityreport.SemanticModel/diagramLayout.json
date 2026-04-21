@@ -71,6 +71,32 @@
             "width": 234
           },
           "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1170,
+            "y": 179.16666603088379
+          },
+          "nodeIndex": "airnow_cleaned",
+          "nodeLineageTag": "d683d898-b4de-440f-ba1e-bee7ffaefefc",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1454,
+            "y": 179.16666603088379
+          },
+          "nodeIndex": "purpleair_cleaned_wo_outliers",
+          "nodeLineageTag": "20081478-6e9f-4bdf-9265-f91efda6630b",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
         }
       ],
       "name": "All tables",

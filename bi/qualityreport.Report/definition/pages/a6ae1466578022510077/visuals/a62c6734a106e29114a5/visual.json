@@ -1,0 +1,122 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "a62c6734a106e29114a5",
+  "position": {
+    "x": 578.27216314101827,
+    "y": 413.86145009112096,
+    "z": 2,
+    "height": 306.14408636877437,
+    "width": 538.58681861173272,
+    "tabOrder": 2
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "purpleair_cleaned_wo_outliers"
+                    }
+                  },
+                  "Property": "Column7"
+                }
+              },
+              "queryRef": "purpleair_cleaned_wo_outliers.Column7",
+              "nativeQueryRef": "Column7",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "purpleair_cleaned_wo_outliers"
+                        }
+                      },
+                      "Property": "Column7"
+                    }
+                  },
+                  "Function": 5
+                }
+              },
+              "queryRef": "Sum(purpleair_cleaned_wo_outliers.Column7)",
+              "nativeQueryRef": "Count of Column7"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Aggregation": {
+                "Expression": {
+                  "Column": {
+                    "Expression": {
+                      "SourceRef": {
+                        "Entity": "purpleair_cleaned_wo_outliers"
+                      }
+                    },
+                    "Property": "Column7"
+                  }
+                },
+                "Function": 5
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "38d52292a376eb0a0c20",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "purpleair_cleaned_wo_outliers"
+              }
+            },
+            "Property": "Column7"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "4326ef061323a051b190",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "purpleair_cleaned_wo_outliers"
+                  }
+                },
+                "Property": "Column7"
+              }
+            },
+            "Function": 5
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

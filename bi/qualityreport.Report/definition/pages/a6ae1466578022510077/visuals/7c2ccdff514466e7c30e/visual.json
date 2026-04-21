@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
   "name": "7c2ccdff514466e7c30e",
   "position": {
-    "x": 10.428583552575745,
+    "x": 11.338669865510163,
     "y": 0,
     "z": 0,
-    "height": 512.15932558205327,
-    "width": 792.57234999575655,
+    "height": 381.73521880550879,
+    "width": 597.16994625020186,
     "tabOrder": 0
   },
   "visual": {
@@ -115,7 +115,46 @@
             "Function": 5
           }
         },
-        "type": "Advanced"
+        "type": "Advanced",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "a",
+              "Entity": "airnow_cleaned",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Comparison": {
+                  "ComparisonKind": 3,
+                  "Left": {
+                    "Aggregation": {
+                      "Expression": {
+                        "Column": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Source": "a"
+                            }
+                          },
+                          "Property": "pm25_nowcast_value"
+                        }
+                      },
+                      "Function": 5
+                    }
+                  },
+                  "Right": {
+                    "Literal": {
+                      "Value": "50L"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
       }
     ]
   }
