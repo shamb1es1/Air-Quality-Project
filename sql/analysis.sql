@@ -241,15 +241,6 @@ CALL make_col_wo_outliers('pm25_atm_b', 'purpleair_atm_b_no_outliers');
 CALL make_col_wo_outliers('pm25_cf_1_a', 'purpleair_cf1_a_no_outliers');
 CALL make_col_wo_outliers('pm25_cf_1_b', 'purpleair_cf1_b_no_outliers');
 
-SELECT *
-INTO OUTFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/purpleair_cleaned_wo_outliers.csv'
-FIELDS TERMINATED BY ','
-ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-FROM purpleair_cleaned_wo_outliers;
-
-SHOW VARIABLES LIKE 'secure_file_priv';
-
 SELECT * FROM purpleair_atm_a_no_outliers;
 SELECT * FROM purpleair_atm_b_no_outliers;
 SELECT * FROM purpleair_cf1_a_no_outliers;
@@ -263,3 +254,105 @@ airnow_sensor_data.fullaqscode = airnow_sites.fullaqscode;
 SELECT * FROM airnow_sensor_data;
 
 SELECT * FROM purpleair_sensor_data;
+
+SELECT * FROM purpleair_cleaned_wo_outliers limit 50;
+
+SELECT * FROM sensor_distances;
+
+SELECT site_id, COUNT(site_id)
+FROM sensor_distances
+GROUP BY site_id;
+
+CREATE OR REPLACE VIEW data_matched_w_outliers AS
+SELECT p.sensor_index AS sensor_index, p.datetime_timestamp AS datetime_timestamp, 
+humidity, temperature, pm25_atm_a, pm25_atm_b, pm25_cf_1_a, pm25_cf_1_b, 
+n.site_id AS site_id, pm25_nowcast_value, pm25_raw_concentration
+FROM purpleair_sensor_data p
+JOIN sensor_distances n
+ON p.sensor_index = n.sensor_index
+JOIN airnow_sensor_data a
+ON n.site_id = a.site_id AND p.datetime_timestamp = a.datetime_timestamp;
+
+CREATE OR REPLACE VIEW data_matched_wo_outliers AS
+SELECT p.sensor_index AS sensor_index, p.datetime_timestamp AS datetime_timestamp, 
+humidity, temperature, pm25_atm_a, pm25_atm_b, pm25_cf_1_a, pm25_cf_1_b, 
+n.site_id AS site_id, pm25_nowcast_value, pm25_raw_concentration
+FROM purpleair_cleaned_wo_outliers p
+JOIN sensor_distances n
+ON p.sensor_index = n.sensor_index
+JOIN airnow_sensor_data a
+ON n.site_id = a.site_id AND p.datetime_timestamp = a.datetime_timestamp
+WHERE p.pm25_cf_1_a <= 100;
+
+DROP PROCEDURE IF EXISTS get_corr;
+DELIMITER //
+CREATE PROCEDURE get_corr(IN x_col VARCHAR(64), IN y_col VARCHAR(64),
+IN table_name VARCHAR(64))
+BEGIN
+    SET @sql = CONCAT(
+        'SELECT ',
+        QUOTE(table_name), ' AS source_table, ',
+        QUOTE(x_col), ' AS x_column, ',
+        QUOTE(y_col), ' AS y_column, ',
+        'COUNT(*) AS matched_rows, ',
+        '(',
+            '(AVG(', x_col, ' * ', y_col, ') - AVG(', x_col, ') * AVG(', y_col, ')) / ',
+            'NULLIF(',
+                'SQRT(AVG(', x_col, ' * ', x_col, ') - POW(AVG(', x_col, '), 2)) * ',
+                'SQRT(AVG(', y_col, ' * ', y_col, ') - POW(AVG(', y_col, '), 2))',
+            ', 0)',
+        ') AS correlation ',
+        'FROM ', table_name, ' ',
+        'WHERE ', x_col, ' IS NOT NULL ',
+        'AND ', y_col, ' IS NOT NULL'
+    );
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END //
+DELIMITER ;
+
+# Get correlation coefficicient for outlier included data
+CALL get_corr('pm25_atm_a', 'pm25_nowcast_value', 'data_matched_w_outliers');
+CALL get_corr('pm25_atm_b', 'pm25_nowcast_value', 'data_matched_w_outliers');
+CALL get_corr('pm25_cf_1_a', 'pm25_nowcast_value', 'data_matched_w_outliers');
+CALL get_corr('pm25_cf_1_b', 'pm25_nowcast_value', 'data_matched_w_outliers');
+
+# Get correlation coefficicient for outlier excluded data
+CALL get_corr('pm25_atm_a', 'pm25_nowcast_value', 'data_matched_wo_outliers');
+CALL get_corr('pm25_atm_b', 'pm25_nowcast_value', 'data_matched_wo_outliers');
+CALL get_corr('pm25_cf_1_a', 'pm25_nowcast_value', 'data_matched_wo_outliers');
+CALL get_corr('pm25_cf_1_b', 'pm25_nowcast_value', 'data_matched_wo_outliers');
+
+DROP PROCEDURE IF EXISTS get_mae;
+DELIMITER //
+CREATE PROCEDURE get_mae(IN x_col VARCHAR(64), IN y_col VARCHAR(64),
+IN table_name VARCHAR(64)
+)
+BEGIN
+    SET @sql = CONCAT(
+        'SELECT ',
+        QUOTE(table_name), ' AS source_table, ',
+        QUOTE(x_col), ' AS x_column, ',
+        QUOTE(y_col), ' AS y_column, ',
+        'COUNT(*) AS matched_rows, ',
+        'AVG(ABS(', x_col, ' - ', y_col, ')) AS mae ',
+        'FROM ', table_name, ' ',
+        'WHERE ', x_col, ' IS NOT NULL ',
+        'AND ', y_col, ' IS NOT NULL'
+    );
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END //
+DELIMITER ;
+
+CALL get_mae('pm25_atm_a', 'pm25_nowcast_value', 'data_matched_w_outliers');
+CALL get_mae('pm25_atm_b', 'pm25_nowcast_value', 'data_matched_w_outliers');
+CALL get_mae('pm25_cf_1_a', 'pm25_nowcast_value', 'data_matched_w_outliers');
+CALL get_mae('pm25_cf_1_b', 'pm25_nowcast_value', 'data_matched_w_outliers');
+
+CALL get_mae('pm25_atm_a', 'pm25_nowcast_value', 'data_matched_wo_outliers');
+CALL get_mae('pm25_atm_b', 'pm25_nowcast_value', 'data_matched_wo_outliers');
+CALL get_mae('pm25_cf_1_a', 'pm25_nowcast_value', 'data_matched_wo_outliers');
+CALL get_mae('pm25_cf_1_b', 'pm25_nowcast_value', 'data_matched_wo_outliers');
