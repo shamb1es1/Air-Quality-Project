@@ -208,20 +208,26 @@ CALL get_corr('pm25_cf_1_b', 'pm25_nowcast_value', 'data_matched', '');
 
 SELECT * FROM minimal_data_matched;
 
+# Moderate/strong correlation for all data under 202.1 PM2.5 (~0.65)
 CALL get_corr('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', '');
 CALL get_corr('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', '');
 CALL get_corr('pm25_cf_1_a', 'pm25_nowcast_value', 'minimal_data_matched', '');
 CALL get_corr('pm25_cf_1_b', 'pm25_nowcast_value', 'minimal_data_matched', '');
 
-CALL get_corr('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'AND dist_miles < 0.5');
-CALL get_corr('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'AND dist_miles < 0.5');
-CALL get_corr('pm25_cf_1_a', 'pm25_nowcast_value', 'minimal_data_matched', 'AND dist_miles < 0.5');
-CALL get_corr('pm25_cf_1_b', 'pm25_nowcast_value', 'minimal_data_matched', 'AND dist_miles < 0.5');
+# Stronger correlation when limiting it to sensors within 1/10 of a mile
+# R^2 value jumps from 0.36 to 0.49 (a 36% improvement)
+# So 49% of the variation in PurpleAir readings is explained by AirNow readings
+CALL get_corr('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'AND dist_miles <= 0.1');
+CALL get_corr('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'AND dist_miles <= 0.1');
+CALL get_corr('pm25_cf_1_a', 'pm25_nowcast_value', 'minimal_data_matched', 'AND dist_miles <= 0.1');
+CALL get_corr('pm25_cf_1_b', 'pm25_nowcast_value', 'minimal_data_matched', 'AND dist_miles <= 0.1');
 
-CALL get_corr('pm25_atm_a', 'pm25_nowcast_value', 'data_matched', ' AND pm25_atm_a < 202.1');
-CALL get_corr('pm25_atm_b', 'pm25_nowcast_value', 'data_matched', 'AND pm25_atm_b < 202.1');
-CALL get_corr('pm25_cf_1_a', 'pm25_nowcast_value', 'data_matched', 'AND pm25_cf_1_a < 202.1');
-CALL get_corr('pm25_cf_1_b', 'pm25_nowcast_value', 'data_matched', 'AND pm25_cf_1_b < 202.1');
+# Similar / slightly greater correlation for sensors within 0.5 miles (likely due to greater
+# sample size giving a more accurate sampling)
+CALL get_corr('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'AND dist_miles <= 0.5');
+CALL get_corr('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'AND dist_miles <= 0.5');
+CALL get_corr('pm25_cf_1_a', 'pm25_nowcast_value', 'minimal_data_matched', 'AND dist_miles <= 0.5');
+CALL get_corr('pm25_cf_1_b', 'pm25_nowcast_value', 'minimal_data_matched', 'AND dist_miles <= 0.5');
 
 DROP PROCEDURE IF EXISTS get_mae;
 DELIMITER //
@@ -256,9 +262,56 @@ CALL get_mae('pm25_atm_b', 'pm25_nowcast_value', 'data_matched');
 CALL get_mae('pm25_cf_1_a', 'pm25_nowcast_value', 'data_matched');
 CALL get_mae('pm25_cf_1_b', 'pm25_nowcast_value', 'data_matched');
 
-SELECT MAX(pm25_atm_a) FROM temp_purpleair_cleaned_wo_outliers;
-SELECT MAX(pm25_atm_b) FROM temp_purpleair_cleaned_wo_outliers;
-SELECT MAX(pm25_cf_1_a) FROM temp_purpleair_cleaned_wo_outliers;
-SELECT MAX(pm25_cf_1_b) FROM temp_purpleair_cleaned_wo_outliers;
+SELECT ROUND(100 * AVG(ABS(pm25_atm_a - pm25_nowcast_value) / NULLIF(pm25_nowcast_value, 0)),2) AS mape
+FROM minimal_data_matched;
 
-SELECT MAX(pm25_nowcast_value) FROM airnow_sensor_data
+SELECT
+  ROUND(
+    100 * AVG(
+      ABS(pm25_atm_a - pm25_nowcast_value) /
+      NULLIF((pm25_atm_a + pm25_nowcast_value) / 2, 0)
+    ),
+    2
+  ) AS symmetric_pct_diff
+FROM data_matched;
+
+# For ATM_A, PurpleAir sensors understimate values at smaller ranges, and slowly begin to overestimate as
+# ranges increase
+SELECT CASE
+	WHEN pm25_nowcast_value <= 5 THEN '0–5'
+    WHEN pm25_nowcast_value <= 10 THEN '5–10'
+    WHEN pm25_nowcast_value <= 25 THEN '10–25'
+    WHEN pm25_nowcast_value <= 50 THEN '25–50'
+    ELSE '50+'
+  END AS `range`,
+AVG(pm25_atm_a - pm25_nowcast_value) AS bias
+FROM minimal_data_matched
+GROUP BY `range`
+ORDER BY MIN(pm25_nowcast_value);
+
+SELECT CASE
+    WHEN pm25_nowcast_value <= 5 THEN '0–5'
+    WHEN pm25_nowcast_value <= 10 THEN '5–10'
+    WHEN pm25_nowcast_value <= 25 THEN '10–25'
+    WHEN pm25_nowcast_value <= 50 THEN '25–50'
+    ELSE '50+'
+  END AS `range`,
+AVG(pm25_cf_1_a - pm25_nowcast_value) AS bias
+FROM minimal_data_matched
+GROUP BY `range`
+ORDER BY MIN(pm25_nowcast_value);
+
+SELECT CASE
+    WHEN pm25_nowcast_value <= 5 THEN '0–5'
+    WHEN pm25_nowcast_value <= 10 THEN '5–10'
+    WHEN pm25_nowcast_value <= 25 THEN '10–25'
+    WHEN pm25_nowcast_value <= 50 THEN '25–50'
+    ELSE '50+' END AS `range`,
+  AVG(ABS(pm25_atm_a - pm25_nowcast_value)) AS mae
+FROM minimal_data_matched
+GROUP BY `range`
+ORDER BY MIN(pm25_nowcast_value);
+
+SELECT COUNT(*) 
+FROM minimal_data_matched
+WHERE pm25_nowcast_value > 50;
