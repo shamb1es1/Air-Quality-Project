@@ -172,28 +172,37 @@ OR pm25_cf_1_b > max_airnow.the_max
 THEN 1 ELSE 0 END)/COUNT(*)*100.0,2) AS '%'
 FROM purpleair_sensor_data CROSS JOIN max_airnow;
 
-DROP PROCEDURE IF EXISTS get_corr;
+DROP PROCEDURE IF EXISTS get_correlation;
 DELIMITER //
-CREATE PROCEDURE get_corr(IN x_col VARCHAR(64), IN y_col VARCHAR(64),
-IN table_name VARCHAR(64), IN where_clause VARCHAR(999))
+CREATE PROCEDURE get_correlation(IN purpleair_col VARCHAR(64), IN airnow_col VARCHAR(64),
+IN table_name VARCHAR(64), IN where_clause VARCHAR(500))
 BEGIN
     SET @sql = CONCAT(
-        'SELECT ',
-        QUOTE(table_name), ' AS source_table, ',
-        QUOTE(x_col), ' AS x_column, ',
-        QUOTE(y_col), ' AS y_column, ',
-        'COUNT(*) AS matched_rows, ',
-        '(',
-            '(AVG(', x_col, ' * ', y_col, ') - AVG(', x_col, ') * AVG(', y_col, ')) / ',
-            'NULLIF(',
-                'SQRT(AVG(', x_col, ' * ', x_col, ') - POW(AVG(', x_col, '), 2)) * ',
-                'SQRT(AVG(', y_col, ' * ', y_col, ') - POW(AVG(', y_col, '), 2))',
-            ', 0)',
-        ') AS correlation ',
-        'FROM ', table_name, ' ',
-        'WHERE ', x_col, ' IS NOT NULL ',
-        'AND ', y_col, ' IS NOT NULL ' , where_clause
+        'SELECT CASE
+            WHEN ', airnow_col, ' <= 5 THEN ''0–5''
+            WHEN ', airnow_col, ' <= 10 THEN ''5–10''
+            WHEN ', airnow_col, ' <= 25 THEN ''10–25''
+            WHEN ', airnow_col, ' <= 50 THEN ''25–50''
+            WHEN ', airnow_col, ' <= 100 THEN ''50–100''
+            ELSE ''100+''
+         END AS `range`,
+         (
+            AVG(', purpleair_col, ' * ', airnow_col, ')
+            - AVG(', purpleair_col, ') * AVG(', airnow_col, ')
+         )
+         /
+         NULLIF(
+            SQRT(AVG(', purpleair_col, ' * ', purpleair_col, ') - POW(AVG(', purpleair_col, '), 2))
+            *
+            SQRT(AVG(', airnow_col, ' * ', airnow_col, ') - POW(AVG(', airnow_col, '), 2)),
+            0
+         ) AS correlation
+         FROM ', table_name, ' '
     );
+    IF where_clause IS NOT NULL AND where_clause != ''
+    THEN SET @sql = CONCAT(@sql, ' WHERE ', where_clause);
+    END IF;
+    SET @sql = CONCAT(@sql, ' GROUP BY `range` ORDER BY MIN(', airnow_col, ')');
     PREPARE stmt FROM @sql;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
@@ -206,13 +215,11 @@ CALL get_corr('pm25_atm_b', 'pm25_nowcast_value', 'data_matched', '');
 CALL get_corr('pm25_cf_1_a', 'pm25_nowcast_value', 'data_matched', '');
 CALL get_corr('pm25_cf_1_b', 'pm25_nowcast_value', 'data_matched', '');
 
-SELECT * FROM minimal_data_matched;
-
 # Moderate/strong correlation for all data under 202.1 PM2.5 (~0.65)
 CALL get_corr('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', '');
 CALL get_corr('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', '');
 CALL get_corr('pm25_cf_1_a', 'pm25_nowcast_value', 'minimal_data_matched', '');
-CALL get_corr('pm25_cf_1_b', 'pm25_nowcast_value', 'minimal_data_matched', '');
+CALL get_corr('pm25_cf_1_a', 'pm25_nowcast_value', 'minimal_data_matched', '');
 
 # Stronger correlation when limiting it to sensors within 1/10 of a mile
 # R^2 value jumps from 0.36 to 0.49 (a 36% improvement)
@@ -220,10 +227,10 @@ CALL get_corr('pm25_cf_1_b', 'pm25_nowcast_value', 'minimal_data_matched', '');
 CALL get_corr('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'AND dist_miles <= 0.1');
 CALL get_corr('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'AND dist_miles <= 0.1');
 CALL get_corr('pm25_cf_1_a', 'pm25_nowcast_value', 'minimal_data_matched', 'AND dist_miles <= 0.1');
-CALL get_corr('pm25_cf_1_b', 'pm25_nowcast_value', 'minimal_data_matched', 'AND dist_miles <= 0.1');
+CALL get_corr('pm25_cf_1_a', 'pm25_nowcast_value', 'minimal_data_matched', 'AND dist_miles <= 0.1');
 
 # Similar / slightly greater correlation for sensors within 0.5 miles (likely due to greater
-# sample size giving a more accurate sampling)
+# sample size (approximately double) giving a more accurate sampling)
 CALL get_corr('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'AND dist_miles <= 0.5');
 CALL get_corr('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'AND dist_miles <= 0.5');
 CALL get_corr('pm25_cf_1_a', 'pm25_nowcast_value', 'minimal_data_matched', 'AND dist_miles <= 0.5');
@@ -231,70 +238,101 @@ CALL get_corr('pm25_cf_1_b', 'pm25_nowcast_value', 'minimal_data_matched', 'AND 
 
 DROP PROCEDURE IF EXISTS get_mae;
 DELIMITER //
-CREATE PROCEDURE get_mae(IN x_col VARCHAR(64), IN y_col VARCHAR(64),
-IN table_name VARCHAR(64)
-)
+CREATE PROCEDURE get_mae(IN purpleair_col VARCHAR(64), IN airnow_col VARCHAR(64),
+IN table_name VARCHAR(64), IN where_clause VARCHAR(500))
 BEGIN
     SET @sql = CONCAT(
-        'SELECT ',
-        QUOTE(table_name), ' AS source_table, ',
-        QUOTE(x_col), ' AS x_column, ',
-        QUOTE(y_col), ' AS y_column, ',
-        'COUNT(*) AS matched_rows, ',
-        'AVG(ABS(', x_col, ' - ', y_col, ')) AS mae ',
-        'FROM ', table_name, ' ',
-        'WHERE ', x_col, ' IS NOT NULL ',
-        'AND ', y_col, ' IS NOT NULL'
+        'SELECT CASE
+            WHEN ', airnow_col, ' <= 5 THEN ''0–5''
+            WHEN ', airnow_col, ' <= 10 THEN ''5–10''
+            WHEN ', airnow_col, ' <= 25 THEN ''10–25''
+            WHEN ', airnow_col, ' <= 50 THEN ''25–50''
+            WHEN ', airnow_col, ' <= 100 THEN ''50–100''
+            ELSE ''100+''
+         END AS `range`,
+         AVG(ABS(', purpleair_col, ' - ', airnow_col, ')) AS mae
+         FROM ', table_name, ' '
     );
+    IF where_clause IS NOT NULL AND where_clause != ''
+    THEN SET @sql = CONCAT(@sql, ' WHERE ', where_clause);
+    END IF;
+    SET @sql = CONCAT(@sql, ' GROUP BY `range` ORDER BY MIN(', airnow_col, ')');
     PREPARE stmt FROM @sql;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
 END //
 DELIMITER ;
 
-CALL get_mae('pm25_atm_a', 'pm25_nowcast_value', 'data_matched');
-CALL get_mae('pm25_atm_b', 'pm25_nowcast_value', 'data_matched');
-CALL get_mae('pm25_cf_1_a', 'pm25_nowcast_value', 'data_matched');
-CALL get_mae('pm25_cf_1_b', 'pm25_nowcast_value', 'data_matched');
+CALL get_mae('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles < 0.1');
+CALL get_mae('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles < 0.5');
+CALL get_mae('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles < 1.0');
 
-CALL get_mae('pm25_atm_a', 'pm25_nowcast_value', 'data_matched');
-CALL get_mae('pm25_atm_b', 'pm25_nowcast_value', 'data_matched');
-CALL get_mae('pm25_cf_1_a', 'pm25_nowcast_value', 'data_matched');
-CALL get_mae('pm25_cf_1_b', 'pm25_nowcast_value', 'data_matched');
+CALL get_mae('pm25_cf_1_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles < 0.1');
+CALL get_mae('pm25_cf_1_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles < 0.5');
+CALL get_mae('pm25_cf_1_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles < 1.0');
+
+# ATM and CF1 values are nearly identical at low thresholds, with CF1 making huge jumps in comparative
+# readings above 25 ug/m^3
+SELECT CASE
+    WHEN pm25_nowcast_value <= 5 THEN '0–5'
+    WHEN pm25_nowcast_value <= 10 THEN '5–10'
+    WHEN pm25_nowcast_value <= 25 THEN '10–25'
+    WHEN pm25_nowcast_value <= 50 THEN '25–50'
+    WHEN pm25_nowcast_value <= 100 THEN '50–100'
+    ELSE '100+'
+  END AS `range`,
+  AVG(pm25_cf_1_a - pm25_atm_a) AS avg_cf1_minus_atm, AVG(pm25_atm_a) AS avg_atm_a,
+  AVG(pm25_cf_1_a) AS avg_cf1_a, AVG(pm25_nowcast_value) AS avg_airnow
+FROM minimal_data_matched
+WHERE dist_miles < 0.5
+GROUP BY `range`
+ORDER BY MIN(pm25_nowcast_value);
 
 SELECT ROUND(100 * AVG(ABS(pm25_atm_a - pm25_nowcast_value) / NULLIF(pm25_nowcast_value, 0)),2) AS mape
 FROM minimal_data_matched;
 
-SELECT
-  ROUND(
-    100 * AVG(
-      ABS(pm25_atm_a - pm25_nowcast_value) /
-      NULLIF((pm25_atm_a + pm25_nowcast_value) / 2, 0)
-    ),
-    2
-  ) AS symmetric_pct_diff
-FROM data_matched;
+DROP PROCEDURE IF EXISTS get_bias;
+DELIMITER //
+CREATE PROCEDURE get_bias(IN purpleair_col VARCHAR(64), IN airnow_col VARCHAR(64),
+IN table_name VARCHAR(64), IN where_clause VARCHAR(500))
+BEGIN
+    SET @sql = CONCAT(
+        'SELECT CASE
+            WHEN ', airnow_col, ' <= 5 THEN ''0–5''
+            WHEN ', airnow_col, ' <= 10 THEN ''5–10''
+            WHEN ', airnow_col, ' <= 25 THEN ''10–25''
+            WHEN ', airnow_col, ' <= 50 THEN ''25–50''
+            WHEN ', airnow_col, ' <= 100 THEN ''50–100''
+            ELSE ''100+''
+         END AS `range`,
+         AVG(', purpleair_col, ' - ', airnow_col, ') AS bias
+         FROM ', table_name, ' '
+    );
+    IF where_clause IS NOT NULL AND where_clause != ''
+    THEN SET @sql = CONCAT(@sql, ' WHERE ', where_clause);
+    END IF;
+    SET @sql = CONCAT(@sql, ' GROUP BY `range` ORDER BY MIN(', airnow_col, ')');
+	PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END //
+DELIMITER ;
 
-# For ATM_A, PurpleAir sensors understimate values at smaller ranges, and slowly begin to overestimate as
-# ranges increase
-SELECT CASE
-	WHEN pm25_nowcast_value <= 5 THEN '0–5'
-    WHEN pm25_nowcast_value <= 10 THEN '5–10'
-    WHEN pm25_nowcast_value <= 25 THEN '10–25'
-    WHEN pm25_nowcast_value <= 50 THEN '25–50'
-    ELSE '50+'
-  END AS `range`,
-AVG(pm25_atm_a - pm25_nowcast_value) AS bias
-FROM minimal_data_matched
-GROUP BY `range`
-ORDER BY MIN(pm25_nowcast_value);
+CALL get_bias('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.1');
+CALL get_bias('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.5');
+CALL get_bias('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 1.0');
+
+CALL get_bias('pm25_cf_1_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.1');
+CALL get_bias('pm25_cf_1_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.5');
+CALL get_bias('pm25_cf_1_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 1.0');
 
 SELECT CASE
     WHEN pm25_nowcast_value <= 5 THEN '0–5'
     WHEN pm25_nowcast_value <= 10 THEN '5–10'
     WHEN pm25_nowcast_value <= 25 THEN '10–25'
     WHEN pm25_nowcast_value <= 50 THEN '25–50'
-    ELSE '50+'
+	WHEN pm25_nowcast_value <= 100 THEN '50-100'
+    ELSE '100+'
   END AS `range`,
 AVG(pm25_cf_1_a - pm25_nowcast_value) AS bias
 FROM minimal_data_matched
@@ -306,7 +344,8 @@ SELECT CASE
     WHEN pm25_nowcast_value <= 10 THEN '5–10'
     WHEN pm25_nowcast_value <= 25 THEN '10–25'
     WHEN pm25_nowcast_value <= 50 THEN '25–50'
-    ELSE '50+' END AS `range`,
+    WHEN pm25_nowcast_value <= 100 THEN '50-100'
+    ELSE '100+' END AS `range`,
   AVG(ABS(pm25_atm_a - pm25_nowcast_value)) AS mae
 FROM minimal_data_matched
 GROUP BY `range`
