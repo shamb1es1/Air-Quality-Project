@@ -38,29 +38,32 @@ CALL pm25_averages('pm25_cf_1_b', 'purpleair_sensor_data');
 CALL pm25_averages('pm25_nowcast_value', 'airnow_sensor_data');
 CALL pm25_averages('pm25_raw_concentration', 'airnow_sensor_data');
 
-DROP PROCEDURE IF EXISTS correlation;
+# Procedure for calculating correlation between columns
+DROP PROCEDURE IF EXISTS get_correlation;
 DELIMITER //
-CREATE PROCEDURE correlation (IN x VARCHAR(64), IN y VARCHAR(64), 
-IN which_table VARCHAR(64), IN where_clause VARCHAR(999))
+CREATE PROCEDURE get_correlation(IN x_col VARCHAR(64), IN y_col VARCHAR(64),
+IN table_name VARCHAR(64), IN where_clause VARCHAR(999))
 BEGIN
-	SET @corrquer = CONCAT(
-        'SELECT 
-        (AVG(', x, ' * ', y, ') - 
-         AVG(', x, ') * AVG(', y, ')) /
-        (
-         NULLIF(
-			(
-				SQRT(AVG(',x,' * ',x,') - POW(AVG(',x,'), 2)) *
-				SQRT(AVG(',y,' * ',y,') - POW(AVG(',y,'), 2))
-			), 0
-		)
-        ) AS correlation_coefficient
-        FROM ', which_table, ' ', where_clause
-    );
-
-    PREPARE getcorr FROM @corrquer;
-    EXECUTE getcorr;
-    DEALLOCATE PREPARE getcorr;
+    SET @sql = CONCAT(
+        'SELECT ',
+        QUOTE(table_name), ' AS source_table, ',
+        QUOTE(x_col), ' AS x_column, ',
+        QUOTE(y_col), ' AS y_column, ',
+        'COUNT(*) AS matched_rows, ',
+        '(',
+            '(AVG(', x_col, ' * ', y_col, ') - AVG(', x_col, ') * AVG(', y_col, ')) / ',
+            'NULLIF(',
+                'SQRT(AVG(', x_col, ' * ', x_col, ') - POW(AVG(', x_col, '), 2)) * ',
+                'SQRT(AVG(', y_col, ' * ', y_col, ') - POW(AVG(', y_col, '), 2))',
+            ', 0)',
+        ') AS correlation ',
+        'FROM ', table_name, ' ');
+        IF where_clause IS NOT NULL AND where_clause != '' THEN
+		SET @sql = CONCAT(@sql, ' WHERE ', where_clause);
+		END IF;
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
 END //
 DELIMITER ;
 
@@ -68,12 +71,13 @@ SELECT * FROM purpleair_sensor_data;
 
 # Near perfect correlation for a->a and b->b conversions which is expected as a formula conversion,
 # but both a/b comparisons have extremely small (~-0.0157) coefficients
-CALL correlation('pm25_atm_a', 'pm25_atm_b', 'purpleair_sensor_data', '');
-CALL correlation('pm25_atm_a', 'pm25_cf_1_a', 'purpleair_sensor_data', '');
-CALL correlation('pm25_atm_a', 'pm25_cf_1_b', 'purpleair_sensor_data', '');
-CALL correlation('pm25_atm_b', 'pm25_cf_1_a', 'purpleair_sensor_data', '');
-CALL correlation('pm25_atm_b', 'pm25_cf_1_b', 'purpleair_sensor_data', '');
-CALL correlation('pm25_cf_1_a', 'pm25_cf_1_b', 'purpleair_sensor_data', '');
+CALL get_correlation('pm25_atm_a', 'pm25_atm_b', 'purpleair_sensor_data', '');
+CALL get_correlation('pm25_atm_a', 'pm25_atm_b', 'purpleair_sensor_data', '');
+CALL get_correlation('pm25_atm_a', 'pm25_cf_1_a', 'purpleair_sensor_data', '');
+CALL get_correlation('pm25_atm_a', 'pm25_cf_1_b', 'purpleair_sensor_data', '');
+CALL get_correlation('pm25_atm_b', 'pm25_cf_1_a', 'purpleair_sensor_data', '');
+CALL get_correlation('pm25_atm_b', 'pm25_cf_1_b', 'purpleair_sensor_data', '');
+CALL get_correlation('pm25_cf_1_a', 'pm25_cf_1_b', 'purpleair_sensor_data', '');
 
 # Find the max PM2.5 value in the AirNow dataset
 SELECT MAX(pm25_nowcast_value) FROM airnow_sensor_data;
@@ -83,12 +87,12 @@ CREATE OR REPLACE VIEW minimal_purpleair AS
 SELECT * FROM purpleair_sensor_data WHERE pm25_atm_a <= 202.1 AND pm25_atm_b <= 202.1 AND
 pm25_cf_1_a <= 202.1 AND pm25_cf_1_b <= 202.1;
 
-CALL correlation('pm25_atm_a', 'pm25_atm_b', 'minimal_purpleair', '');
-CALL correlation('pm25_atm_a', 'pm25_cf_1_a', 'minimal_purpleair', '');
-CALL correlation('pm25_atm_a', 'pm25_cf_1_b', 'minimal_purpleair', '');
-CALL correlation('pm25_atm_b', 'pm25_cf_1_a', 'minimal_purpleair', '');
-CALL correlation('pm25_atm_b', 'pm25_cf_1_b', 'minimal_purpleair', '');
-CALL correlation('pm25_cf_1_a', 'pm25_cf_1_b', 'minimal_purpleair', '');
+CALL get_correlation('pm25_atm_a', 'pm25_atm_b', 'minimal_purpleair', '');
+CALL get_correlation('pm25_atm_a', 'pm25_cf_1_a', 'minimal_purpleair', '');
+CALL get_correlation('pm25_atm_a', 'pm25_cf_1_b', 'minimal_purpleair', '');
+CALL get_correlation('pm25_atm_b', 'pm25_cf_1_a', 'minimal_purpleair', '');
+CALL get_correlation('pm25_atm_b', 'pm25_cf_1_b', 'minimal_purpleair', '');
+CALL get_correlation('pm25_cf_1_a', 'pm25_cf_1_b', 'minimal_purpleair', '');
 
 SELECT *
 FROM purpleair_sensor_data
@@ -172,35 +176,6 @@ OR pm25_atm_b > max_airnow.the_max
 OR pm25_cf_1_b > max_airnow.the_max 
 THEN 1 ELSE 0 END)/COUNT(*)*100.0,2) AS '%'
 FROM purpleair_sensor_data CROSS JOIN max_airnow;
-
-# Procedure for calculating correlation between columns
-DROP PROCEDURE IF EXISTS get_correlation;
-DELIMITER //
-CREATE PROCEDURE get_correlation(IN x_col VARCHAR(64), IN y_col VARCHAR(64),
-IN table_name VARCHAR(64), IN where_clause VARCHAR(999))
-BEGIN
-    SET @sql = CONCAT(
-        'SELECT ',
-        QUOTE(table_name), ' AS source_table, ',
-        QUOTE(x_col), ' AS x_column, ',
-        QUOTE(y_col), ' AS y_column, ',
-        'COUNT(*) AS matched_rows, ',
-        '(',
-            '(AVG(', x_col, ' * ', y_col, ') - AVG(', x_col, ') * AVG(', y_col, ')) / ',
-            'NULLIF(',
-                'SQRT(AVG(', x_col, ' * ', x_col, ') - POW(AVG(', x_col, '), 2)) * ',
-                'SQRT(AVG(', y_col, ' * ', y_col, ') - POW(AVG(', y_col, '), 2))',
-            ', 0)',
-        ') AS correlation ',
-        'FROM ', table_name, ' ');
-        IF where_clause IS NOT NULL AND where_clause != '' THEN
-		SET @sql = CONCAT(@sql, ' WHERE ', where_clause);
-		END IF;
-    PREPARE stmt FROM @sql;
-    EXECUTE stmt;
-    DEALLOCATE PREPARE stmt;
-END //
-DELIMITER ;
 
 # Get correlation coefficicient for all data
 # Essentially no correlation when allowing data above the 202.1 mark (heavy skewing by the 3.44% of 
