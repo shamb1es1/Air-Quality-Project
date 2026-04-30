@@ -67,8 +67,6 @@ BEGIN
 END //
 DELIMITER ;
 
-SELECT * FROM purpleair_sensor_data;
-
 # Near perfect correlation for a->a and b->b conversions which is expected as a formula conversion,
 # but both a/b comparisons have extremely small (~-0.0157) coefficients
 CALL get_correlation('pm25_atm_a', 'pm25_atm_b', 'purpleair_sensor_data', '');
@@ -79,7 +77,7 @@ CALL get_correlation('pm25_atm_b', 'pm25_cf_1_a', 'purpleair_sensor_data', '');
 CALL get_correlation('pm25_atm_b', 'pm25_cf_1_b', 'purpleair_sensor_data', '');
 CALL get_correlation('pm25_cf_1_a', 'pm25_cf_1_b', 'purpleair_sensor_data', '');
 
-# Find the max PM2.5 value in the AirNow dataset
+# Find the max PM2.5 value in the AirNow dataset (202.1)
 SELECT MAX(pm25_nowcast_value) FROM airnow_sensor_data;
 
 # Limit PurpleAir dataset to data that falls below the max value appearance in the AirNow dataset
@@ -125,17 +123,105 @@ BEGIN
 END$$
 DELIMITER ;
 
-# View that calculates distances between all sensors in each data set
-CREATE OR REPLACE VIEW sensor_distances AS
-SELECT sensor_index, site_id, dist_miles
-FROM
-	(SELECT p.sensor_index, a.site_id,
-	ROUND(haversine_miles(p.latitude, p.longitude, a.latitude, a.longitude),2) AS dist_miles,
-    ROW_NUMBER() OVER(PARTITION BY p.sensor_index 
-    ORDER BY haversine_miles(p.latitude, p.longitude, a.latitude, a.longitude) ASC) AS dist_rank
-	FROM purpleair_sensors p
-	CROSS JOIN airnow_sites a) o
-WHERE dist_rank = 1;
+# Calculates distances between all sensors in each data set
+# Performs cross join to get all distances as some timestamps in PurpleAir dataset don't exist at
+# the same time at the site of their closest match
+DROP TABLE IF EXISTS sensor_distances;
+CREATE TABLE sensor_distances AS
+SELECT sensor_index, site_id, dist_miles, dist_rank
+FROM (
+  SELECT p.sensor_index, a.site_id, ROUND(haversine_miles(p.latitude, p.longitude, a.latitude, 
+  a.longitude), 2) AS dist_miles, ROW_NUMBER() OVER (PARTITION BY p.sensor_index ORDER BY 
+  haversine_miles(p.latitude, p.longitude, a.latitude, a.longitude)) AS dist_rank
+  FROM purpleair_sensors p
+  CROSS JOIN airnow_sites a
+) ranked;
+
+# Indexes for sensor_distances
+CALL drop_index_if_exists('sensor_distances', 'idx_ssd_sensor_site');
+CALL drop_index_if_exists('sensor_distances', 'idx_ssd_sensor_dist');
+CALL drop_index_if_exists('sensor_distances', 'idx_ssd_site');
+CALL drop_index_if_exists('sensor_distances', 'idx_ssd_site_sensor_dist');
+CALL drop_index_if_exists('sensor_distances', 'idx_ssd_sensor_site_dist');
+CREATE INDEX idx_ssd_sensor_site
+ON sensor_distances(sensor_index, site_id);
+CREATE INDEX idx_ssd_sensor_dist
+ON sensor_distances(sensor_index, dist_miles);
+CREATE INDEX idx_ssd_site
+ON sensor_distances(site_id);
+CREATE INDEX idx_ssd_site_sensor_dist
+ON sensor_distances(site_id, sensor_index, dist_miles);
+CREATE INDEX idx_ssd_sensor_site_dist
+ON sensor_distances(sensor_index, site_id, dist_miles);
+
+# Indexes for purpleair_sensor_data and airnow_sensor_data
+CALL drop_index_if_exists('purpleair_sensor_data', 'idx_purpleair_sensor_time');
+CALL drop_index_if_exists('purpleair_sensor_data', 'idx_purpleair_time');
+CALL drop_index_if_exists('airnow_sensor_data', 'idx_airnow_time_site');
+CALL drop_index_if_exists('airnow_sensor_data', 'idx_airnow_site_time');
+CREATE INDEX idx_purpleair_sensor_time
+ON purpleair_sensor_data(sensor_index, datetime_timestamp);
+CREATE INDEX idx_purpleair_time
+ON purpleair_sensor_data(datetime_timestamp);
+CREATE INDEX idx_airnow_time_site
+ON airnow_sensor_data(datetime_timestamp, site_id);
+CREATE INDEX idx_airnow_site_time
+ON airnow_sensor_data(site_id, datetime_timestamp);
+
+# Match PurpleAir rows to their matching AirNow rows based on their closest site (not all will be
+# matched)
+DROP TABLE IF EXISTS data_matched;
+CREATE TABLE data_matched AS
+SELECT p.sensor_index, d.site_id, d.dist_miles, p.datetime_timestamp, p.humidity, p.temperature,
+p.pm25_atm_a, p.pm25_atm_b, p.pm25_cf_1_a, p.pm25_cf_1_b, a.pm25_nowcast_value, a.pm25_raw_concentration
+FROM purpleair_sensor_data p
+JOIN sensor_distances d
+ON p.sensor_index = d.sensor_index AND d.dist_rank = 1
+JOIN airnow_sensor_data a
+ON a.site_id = d.site_id AND a.datetime_timestamp = p.datetime_timestamp;
+
+# Get the PurpleAir rows whose nearest site does not have a rows for that timestamp
+CREATE OR REPLACE VIEW unmatched_purpleair AS
+SELECT p.*
+FROM purpleair_sensor_data p
+JOIN sensor_distances d
+ON p.sensor_index = d.sensor_index AND d.dist_rank = 1
+LEFT JOIN airnow_sensor_data a
+ON a.site_id = d.site_id AND a.datetime_timestamp = p.datetime_timestamp
+WHERE a.site_id IS NULL;
+
+# For unmatched data, search the other sites for data at the timestamp and keep the nearest site
+DROP TABLE IF EXISTS backup_data_matched;
+CREATE TABLE backup_data_matched AS
+SELECT *
+FROM (
+  SELECT p.sensor_index, d.site_id, d.dist_miles, p.datetime_timestamp, p.humidity, p.temperature,
+  p.pm25_atm_a, p.pm25_atm_b, p.pm25_cf_1_a, p.pm25_cf_1_b, a.pm25_nowcast_value, a.pm25_raw_concentration,
+  ROW_NUMBER() OVER (PARTITION BY p.sensor_index, p.datetime_timestamp ORDER BY d.dist_rank ASC)
+  AS backup_rank
+  FROM unmatched_purpleair p
+  JOIN sensor_distances d
+  ON p.sensor_index = d.sensor_index AND d.dist_rank > 1
+  JOIN airnow_sensor_data a
+  ON a.site_id = d.site_id AND a.datetime_timestamp = p.datetime_timestamp
+) ranked
+WHERE backup_rank = 1;
+
+# Append all matched data (100% of PurpleAir rows have a match now to the nearest site that has
+# data at that time)
+INSERT INTO data_matched
+SELECT b.*
+FROM backup_data_matched b
+LEFT JOIN data_matched dm
+ON dm.sensor_index = b.sensor_index AND dm.datetime_timestamp = b.datetime_timestamp
+WHERE dm.sensor_index IS NULL;
+
+# Only look at data below the max value found in AirNow dataset
+DROP TABLE IF EXISTS minimal_data_matched;
+CREATE TABLE minimal_data_matched AS
+SELECT *
+FROM data_matched
+WHERE pm25_atm_a <= 202.1 AND pm25_atm_b <= 202.1 AND pm25_cf_1_a <= 202.1 AND pm25_cf_1_b <= 202.1;
 
 # See how many PurpleAir sensors have their closest AirNow sensor under a certain distance in miles
 SELECT
@@ -144,26 +230,8 @@ SUM(dist_miles <= 0.3) AS `Under 0.3`,
 SUM(dist_miles <= 0.5) AS `Under 0.5`,
 SUM(dist_miles <= 1.0) AS `Under 1.0`,
 SUM(dist_miles <= 5.0) AS `Under 5.0`
-FROM sensor_distances;
-
-# Match corresponding rows from each data set based on the closest sensor
-CREATE OR REPLACE VIEW data_matched AS
-SELECT p.*, s.site_id, s.dist_miles, a.pm25_nowcast_value, a.pm25_raw_concentration
-FROM purpleair_sensor_data p
-JOIN sensor_distances s
-ON p.sensor_index = s.sensor_index
-JOIN airnow_sensor_data a
-ON s.site_id = a.site_id AND p.datetime_timestamp = a.datetime_timestamp;
-
-CREATE OR REPLACE VIEW minimal_data_matched AS
-SELECT p.*, s.site_id, s.dist_miles, a.pm25_nowcast_value, a.pm25_raw_concentration
-FROM purpleair_sensor_data p
-JOIN sensor_distances s
-ON p.sensor_index = s.sensor_index
-JOIN airnow_sensor_data a
-ON s.site_id = a.site_id AND p.datetime_timestamp = a.datetime_timestamp
-WHERE pm25_atm_a <= 202.1 AND pm25_atm_b <= 202.1 AND
-pm25_cf_1_a <= 202.1 AND pm25_cf_1_b <= 202.1;
+FROM sensor_distances
+WHERE dist_rank = 1;
 
 # Get the % of rows in PurpleAir dataset that are greater than the max appearence in AirNow dataset
 # That being 3.44%
@@ -185,7 +253,7 @@ CALL get_correlation('pm25_atm_b', 'pm25_nowcast_value', 'data_matched', '');
 CALL get_correlation('pm25_cf_1_a', 'pm25_nowcast_value', 'data_matched', '');
 CALL get_correlation('pm25_cf_1_b', 'pm25_nowcast_value', 'data_matched', '');
 
-# Moderate/strong correlation for all data under 202.1 PM2.5 (~0.65)
+# Moderate/strong correlation for all data under 202.1 PM2.5 (~0.64)
 CALL get_correlation('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', '');
 CALL get_correlation('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', '');
 CALL get_correlation('pm25_cf_1_a', 'pm25_nowcast_value', 'minimal_data_matched', '');
@@ -199,8 +267,7 @@ CALL get_correlation('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched',
 CALL get_correlation('pm25_cf_1_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.1');
 CALL get_correlation('pm25_cf_1_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.1');
 
-# Similar / slightly greater correlation for sensors within 0.5 miles (likely due to greater
-# sample size (approximately double) giving a more accurate calculation)
+# Similar correlation for sensors within 0.5 miles
 CALL get_correlation('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.5');
 CALL get_correlation('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.5');
 CALL get_correlation('pm25_cf_1_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.5');
@@ -254,31 +321,13 @@ BEGIN
 END //
 DELIMITER ;
 
+# Increased MAE as readings rise
 CALL get_mae('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles < 0.1');
 CALL get_mae('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles < 0.5');
 CALL get_mae('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles < 1.0');
-
 CALL get_mae('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles < 0.1');
 CALL get_mae('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles < 0.5');
 CALL get_mae('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles < 1.0');
-
-SELECT
-  CASE
-    WHEN pm25_nowcast_value <= 5 THEN '0–5'
-    WHEN pm25_nowcast_value <= 10 THEN '5–10'
-    WHEN pm25_nowcast_value <= 25 THEN '10–25'
-    WHEN pm25_nowcast_value <= 50 THEN '25–50'
-    WHEN pm25_nowcast_value <= 100 THEN '50–100'
-    ELSE '100+'
-  END AS `range`,
-  AVG(
-    100 * ABS(pm25_atm_a - pm25_nowcast_value) /
-    NULLIF((pm25_atm_a + pm25_nowcast_value)/2, 0)
-  ) AS pct_diff
-FROM minimal_data_matched
-WHERE dist_miles < 0.1
-GROUP BY `range`
-ORDER BY MIN(pm25_nowcast_value);
 
 # Procedure for calculating bias between columns
 DROP PROCEDURE IF EXISTS get_bias;
@@ -308,8 +357,8 @@ BEGIN
 END //
 DELIMITER ;
 
-# At all distance ranges, PurpleAir overestimates PM2.5 values at low to moderate levels, and
-# underestimates them at higher ones
+# In small to moderate distance concentrations, PurpleAir overestimates PM2.5 values, and
+# underestimates them at larger ones
 CALL get_bias('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.1');
 CALL get_bias('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.5');
 CALL get_bias('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 1.0');
@@ -317,6 +366,7 @@ CALL get_bias('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_
 CALL get_bias('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.5');
 CALL get_bias('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 1.0');
 
+# Symmetric percent difference between PM2.5 readings
 DROP PROCEDURE IF EXISTS get_symmetric_pct_diff;
 DELIMITER //
 CREATE PROCEDURE get_symmetric_pct_diff(IN purpleair_col VARCHAR(64), IN airnow_col VARCHAR(64),
@@ -350,8 +400,15 @@ BEGIN
 END //
 DELIMITER ;
 
+# Relative error highest at low PM2.5 values due to the sensitivity of % based calculations, especially
+# with MAE showing larger variation as values increase
 CALL get_symmetric_pct_diff('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.1');
-
+CALL get_symmetric_pct_diff('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.5');
+CALL get_symmetric_pct_diff('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 1.0');
+CALL get_symmetric_pct_diff('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.1');
+CALL get_symmetric_pct_diff('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.5');
+CALL get_symmetric_pct_diff('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 1.0');
+# Weighted percent difference between PM2.5 readings
 DROP PROCEDURE IF EXISTS get_weighted_pct_error;
 DELIMITER //
 CREATE PROCEDURE get_weighted_pct_error(
@@ -381,8 +438,13 @@ BEGIN
 END //
 DELIMITER ;
 
-CALL get_weighted_pct_error('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.1');
 
+CALL get_weighted_pct_error('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.1');
+CALL get_weighted_pct_error('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.5');
+CALL get_weighted_pct_error('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 1.0');
+CALL get_weighted_pct_error('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.1');
+CALL get_weighted_pct_error('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.5');
+CALL get_weighted_pct_error('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 1.0');
 SELECT
   CASE
     WHEN humidity <= 30 THEN 'Low'
@@ -394,8 +456,6 @@ SELECT
 FROM minimal_data_matched
 WHERE dist_miles < 0.1
 GROUP BY humidity_range;
-
-CALL get_correlation('humidity', 'error', 'data_with_error', '');
 
 CALL get_correlation('humidity', 'pm25_nowcast_value', 'minimal_data_matched', '');
 CALL get_correlation('humidity', 'pm25_atm_a', 'minimal_data_matched', 'dist_miles <= 0.1');
@@ -417,8 +477,12 @@ FROM minimal_data_matched;
 # While we must rely on PurpleAir for these readings, there is a slightly stronger correlation for
 # humidity to both reading error (A=0.26,B=0.20) and absolute error (A=0.24,B=0.19) compared to
 # humidity and AirNow readings (0.14)
+# Suggesting humidity might introduce a slight bias in the PurpleAir dataset to overestimate the PM2.5
+# readings as opposed to what it would otherwise read at lower humidities 
 CALL get_correlation('humidity', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.1');
+CALL get_correlation('humidity', 'pm25_atm_a', 'minimal_data_matched', 'dist_miles <= 0.1');
 CALL get_correlation('humidity', 'atm_a_error', 'minimal_data_matched_error', 'dist_miles <= 0.1');
 CALL get_correlation('humidity', 'atm_a_abs_error', 'minimal_data_matched_abs_error', 'dist_miles <= 0.1');
+CALL get_correlation('humidity', 'pm25_atm_a', 'minimal_data_matched', 'dist_miles <= 0.1');
 CALL get_correlation('humidity', 'atm_b_error', 'minimal_data_matched_error', 'dist_miles <= 0.1');
 CALL get_correlation('humidity', 'atm_b_abs_error', 'minimal_data_matched_abs_error', 'dist_miles <= 0.1');
