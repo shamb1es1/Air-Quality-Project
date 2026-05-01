@@ -210,11 +210,10 @@ WHERE backup_rank = 1;
 # Append all matched data (100% of PurpleAir rows have a match now to the nearest site that has
 # data at that time)
 INSERT INTO data_matched
-SELECT b.*
-FROM backup_data_matched b
-LEFT JOIN data_matched dm
-ON dm.sensor_index = b.sensor_index AND dm.datetime_timestamp = b.datetime_timestamp
-WHERE dm.sensor_index IS NULL;
+SELECT sensor_index, site_id, dist_miles, datetime_timestamp, humidity, temperature,
+       pm25_atm_a, pm25_atm_b, pm25_cf_1_a, pm25_cf_1_b,
+       pm25_nowcast_value, pm25_raw_concentration
+FROM backup_data_matched;
 
 # Only look at data below the max value found in AirNow dataset
 DROP TABLE IF EXISTS minimal_data_matched;
@@ -329,6 +328,12 @@ CALL get_mae('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_m
 CALL get_mae('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles < 0.5');
 CALL get_mae('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles < 1.0');
 
+# Greater error between sensors as readings increase
+CALL get_mae('pm25_atm_a', 'pm25_atm_b', 'minimal_data_matched', 'dist_miles < 0.1');
+CALL get_mae('pm25_atm_a', 'pm25_atm_b', 'minimal_data_matched', 'dist_miles < 0.5');
+CALL get_mae('pm25_atm_a', 'pm25_atm_b', 'minimal_data_matched', 'dist_miles < 1.0');
+
+
 # Procedure for calculating bias between columns
 DROP PROCEDURE IF EXISTS get_bias;
 DELIMITER //
@@ -365,6 +370,12 @@ CALL get_bias('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_
 CALL get_bias('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.1');
 CALL get_bias('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.5');
 CALL get_bias('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 1.0');
+
+# Channel A has slight tendency to overestimate at lower concentrations, and begins to underestimate as
+# concentrations rise
+CALL get_bias('pm25_atm_a', 'pm25_atm_b', 'minimal_data_matched', 'dist_miles < 0.1');
+CALL get_bias('pm25_atm_a', 'pm25_atm_b', 'minimal_data_matched', 'dist_miles < 0.5');
+CALL get_bias('pm25_atm_a', 'pm25_atm_b', 'minimal_data_matched', 'dist_miles < 1.0');
 
 # Symmetric percent difference between PM2.5 readings
 DROP PROCEDURE IF EXISTS get_symmetric_pct_diff;
@@ -445,17 +456,6 @@ CALL get_weighted_pct_error('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_ma
 CALL get_weighted_pct_error('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.1');
 CALL get_weighted_pct_error('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.5');
 CALL get_weighted_pct_error('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 1.0');
-SELECT
-  CASE
-    WHEN humidity <= 30 THEN 'Low'
-    WHEN humidity <= 60 THEN 'Medium'
-    ELSE 'High'
-  END AS humidity_range,
-  AVG(pm25_atm_a - pm25_nowcast_value) AS bias,
-  AVG(ABS(pm25_atm_a - pm25_nowcast_value)) AS mae
-FROM minimal_data_matched
-WHERE dist_miles < 0.1
-GROUP BY humidity_range;
 
 CALL get_correlation('humidity', 'pm25_nowcast_value', 'minimal_data_matched', '');
 CALL get_correlation('humidity', 'pm25_atm_a', 'minimal_data_matched', 'dist_miles <= 0.1');
@@ -486,3 +486,13 @@ CALL get_correlation('humidity', 'atm_a_abs_error', 'minimal_data_matched_abs_er
 CALL get_correlation('humidity', 'pm25_atm_a', 'minimal_data_matched', 'dist_miles <= 0.1');
 CALL get_correlation('humidity', 'atm_b_error', 'minimal_data_matched_error', 'dist_miles <= 0.1');
 CALL get_correlation('humidity', 'atm_b_abs_error', 'minimal_data_matched_abs_error', 'dist_miles <= 0.1');
+
+CREATE OR REPLACE VIEW minimal_data_matched_channel_diff AS
+SELECT *, ABS(pm25_atm_a - pm25_atm_b) AS ab_diff, ABS(pm25_atm_a - pm25_nowcast_value) AS atm_a_abs_error,
+ABS(pm25_atm_b - pm25_nowcast_value) AS atm_b_abs_error
+FROM minimal_data_matched;
+
+# Channel disagreement is a strong predictor of error for channel A, but only a moderate predictor for 
+# channel B
+CALL get_correlation('ab_diff', 'atm_a_abs_error', 'minimal_data_matched_channel_diff', 'dist_miles <= 0.1');
+CALL get_correlation('ab_diff', 'atm_b_abs_error', 'minimal_data_matched_channel_diff', 'dist_miles <= 0.1');
