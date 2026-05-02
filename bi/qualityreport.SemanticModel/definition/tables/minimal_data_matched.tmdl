@@ -1,0 +1,126 @@
+table minimal_data_matched
+	lineageTag: ee2f18da-1467-4d57-b5ec-06d75edacebb
+
+	column sensor_index
+		formatString: 0
+		lineageTag: 2c501460-e5d9-47af-a683-f6d622edca53
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: data_matched[sensor_index]
+
+		annotation SummarizationSetBy = Automatic
+
+	column site_id
+		formatString: 0
+		lineageTag: c3436c55-4b16-4607-8b51-81c055ef1060
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: data_matched[site_id]
+
+		annotation SummarizationSetBy = Automatic
+
+	column dist_miles
+		lineageTag: c53dc8c9-f2b2-4ae4-8bed-cf4e8a8a8d41
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: data_matched[dist_miles]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column datetime_timestamp
+		formatString: General Date
+		lineageTag: 78b92565-5985-43ea-9dbe-3c77eb8bd7bc
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: data_matched[datetime_timestamp]
+
+		annotation SummarizationSetBy = Automatic
+
+	column humidity
+		formatString: 0
+		lineageTag: 4094cd62-9b79-4296-b8cf-877ae023934e
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: data_matched[humidity]
+
+		annotation SummarizationSetBy = Automatic
+
+	column temperature
+		formatString: 0
+		lineageTag: 684f9dcc-b3d9-49ee-8c63-89bf65125fa6
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: data_matched[temperature]
+
+		annotation SummarizationSetBy = Automatic
+
+	column pm25_atm_a
+		lineageTag: 1360b005-6372-4e9c-bad7-e96fbd342f2a
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: data_matched[pm25_atm_a]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column pm25_atm_b
+		lineageTag: 9c608683-3600-4b7d-8aef-13d194dd6a49
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: data_matched[pm25_atm_b]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column pm25_cf_1_a
+		lineageTag: 02f79625-b304-4c36-b221-7ca4411ed0cc
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: data_matched[pm25_cf_1_a]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column pm25_cf_1_b
+		lineageTag: ae5b7b6e-5dec-4b31-afe6-e1d9f650b001
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: data_matched[pm25_cf_1_b]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column pm25_nowcast_value
+		lineageTag: 649c0aef-165f-46fd-8637-192d0231b129
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: data_matched[pm25_nowcast_value]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column pm25_raw_concentration
+		lineageTag: 9e069ee6-c91c-4078-a047-0f72e2082b1a
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: data_matched[pm25_raw_concentration]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition minimal_data_matched = calculated
+		mode: import
+		source =
+				
+				FILTER(data_matched, data_matched[pm25_atm_a] < MAX(airnow_cleaned[pm25_nowcast_value]) && data_matched[pm25_atm_b] < MAX(airnow_cleaned[pm25_nowcast_value]) && data_matched[pm25_cf_1_a] < MAX(airnow_cleaned[pm25_nowcast_value]) && data_matched[pm25_cf_1_b] < MAX(airnow_cleaned[pm25_nowcast_value]))
+
+	annotation PBI_Id = f33f672464a2453fad741070dc1531ba
+

@@ -17,11 +17,6 @@ table airnow_cleaned
 		summarizeBy: none
 		sourceColumn: datetime_timestamp
 
-		variation Variation
-			isDefault
-			relationship: 4cf8d70f-54b2-4949-b7f3-a5ba07b52c23
-			defaultHierarchy: LocalDateTable_b33b43a7-5a17-42bf-b3f0-f0888c3b6b39.'Date Hierarchy'
-
 		annotation SummarizationSetBy = Automatic
 
 	column fullaqscode

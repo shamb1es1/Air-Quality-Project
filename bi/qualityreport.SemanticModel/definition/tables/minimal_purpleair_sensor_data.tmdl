@@ -71,7 +71,7 @@ table minimal_purpleair_sensor_data
 	column sensor_index
 		formatString: 0
 		lineageTag: 65854511-34a5-4168-a99c-720a78f9435f
-		summarizeBy: sum
+		summarizeBy: none
 		isNameInferred
 		sourceColumn: purpleair_sensor_data[sensor_index]
 

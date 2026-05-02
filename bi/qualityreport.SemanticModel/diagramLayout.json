@@ -4,7 +4,7 @@
     {
       "ordinal": 0,
       "scrollPosition": {
-        "x": 4,
+        "x": 0,
         "y": 0
       },
       "nodes": [
@@ -19,12 +19,12 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 3
+          "zIndex": 4
         },
         {
           "location": {
-            "x": 602,
-            "y": 98
+            "x": 0,
+            "y": 342
           },
           "nodeIndex": "purpleair_sensor_data",
           "nodeLineageTag": "a505f67a-e830-44a1-922a-1a4bbc87014b",
@@ -32,12 +32,12 @@
             "height": 272,
             "width": 234
           },
-          "zIndex": 1
+          "zIndex": 3
         },
         {
           "location": {
-            "x": 334,
-            "y": 382.33333206176758
+            "x": 40,
+            "y": 830.33333206176758
           },
           "nodeIndex": "purpleair_sensors",
           "nodeLineageTag": "ad848229-3c0d-463e-8741-67a21866c289",
@@ -45,37 +45,38 @@
             "height": 248,
             "width": 234
           },
-          "zIndex": 2
+          "zIndex": 6
         },
         {
           "location": {
-            "x": 324.99999618530273,
-            "y": 0
+            "x": 474.99999618530273,
+            "y": 101
           },
           "nodeIndex": "date_table",
           "nodeLineageTag": "5858e9e9-5c0d-41a1-a854-878d0e934806",
           "size": {
-            "height": 200,
+            "height": 205,
             "width": 234
           },
-          "zIndex": 4
+          "zIndex": 9
         },
         {
           "location": {
-            "x": 886,
-            "y": 215.16666603088379
+            "x": 1670,
+            "y": 625.16666603088379
           },
           "nodeIndex": "formula_selector",
+          "nodeLineageTag": "5746c957-9719-49fb-b5d8-b1d25661cda9",
           "size": {
             "height": 200,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 1
         },
         {
           "location": {
-            "x": 1170,
-            "y": 179.16666603088379
+            "x": 886,
+            "y": 37.166666030883789
           },
           "nodeIndex": "airnow_cleaned",
           "nodeLineageTag": "d683d898-b4de-440f-ba1e-bee7ffaefefc",
@@ -83,36 +84,25 @@
             "height": 272,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 2
         },
         {
           "location": {
-            "x": 1454,
-            "y": 215.16666603088379
+            "x": 674,
+            "y": 711.16666603088379
           },
           "nodeIndex": "minimal_purpleair_sensor_data",
+          "nodeLineageTag": "45a04c62-81db-42f2-ba7f-aaf583d1623b",
           "size": {
             "height": 200,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 7
         },
         {
           "location": {
-            "x": 1738,
-            "y": 215.16666603088379
-          },
-          "nodeIndex": "test",
-          "size": {
-            "height": 200,
-            "width": 234
-          },
-          "zIndex": 0
-        },
-        {
-          "location": {
-            "x": 2022,
-            "y": 165.16666603088379
+            "x": 841.9999885559082,
+            "y": 369.16666603088379
           },
           "nodeIndex": "data_matched",
           "nodeLineageTag": "47692134-3a44-49ff-87ea-dd060d8338da",
@@ -120,7 +110,20 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 282,
+            "y": 584.16666603088379
+          },
+          "nodeIndex": "minimal_data_matched",
+          "nodeLineageTag": "ee2f18da-1467-4d57-b5ec-06d75edacebb",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 8
         }
       ],
       "name": "All tables",

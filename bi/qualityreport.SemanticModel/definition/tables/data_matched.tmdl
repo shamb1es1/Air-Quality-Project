@@ -36,11 +36,6 @@ table data_matched
 		summarizeBy: none
 		sourceColumn: datetime_timestamp
 
-		variation Variation
-			isDefault
-			relationship: c98fb4c3-5c98-4102-8723-2e4d9f959574
-			defaultHierarchy: LocalDateTable_8f9fd083-3f1d-4453-b948-73727ee6729d.'Date Hierarchy'
-
 		annotation SummarizationSetBy = Automatic
 
 	column humidity
