@@ -8,7 +8,7 @@ model Model
 
 annotation __PBI_TimeIntelligenceEnabled = 1
 
-annotation PBI_QueryOrder = ["airnow_sensor_data","purpleair_sensor_data","purpleair_sensors","airnow_cleaned"]
+annotation PBI_QueryOrder = ["airnow_sensor_data","purpleair_sensor_data","purpleair_sensors","airnow_cleaned","data_matched"]
 
 annotation PBI_ProTooling = ["DevMode"]
 
@@ -25,6 +25,8 @@ ref table LocalDateTable_b33b43a7-5a17-42bf-b3f0-f0888c3b6b39
 ref table minimal_purpleair_sensor_data
 ref table LocalDateTable_cedc6772-f6be-4dd1-bb40-5927f1c94b63
 ref table test
+ref table data_matched
+ref table LocalDateTable_8f9fd083-3f1d-4453-b948-73727ee6729d
 
 ref cultureInfo en-US
 

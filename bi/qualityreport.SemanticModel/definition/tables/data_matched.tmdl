@@ -1,0 +1,137 @@
+table data_matched
+	lineageTag: 47692134-3a44-49ff-87ea-dd060d8338da
+
+	column sensor_index
+		dataType: int64
+		formatString: 0
+		lineageTag: e6a5dc1c-f6ee-4fad-a5a8-bf6a5e962b37
+		summarizeBy: none
+		sourceColumn: sensor_index
+
+		annotation SummarizationSetBy = Automatic
+
+	column site_id
+		dataType: int64
+		formatString: 0
+		lineageTag: cdf0fbb0-8353-422c-becf-8ec6c5b84ddd
+		summarizeBy: sum
+		sourceColumn: site_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column dist_miles
+		dataType: double
+		lineageTag: fbe46c08-45e4-4816-9384-893fce9a5273
+		summarizeBy: sum
+		sourceColumn: dist_miles
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column datetime_timestamp
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 0491696c-6643-4d5e-9e40-3da0437ba306
+		summarizeBy: none
+		sourceColumn: datetime_timestamp
+
+		variation Variation
+			isDefault
+			relationship: c98fb4c3-5c98-4102-8723-2e4d9f959574
+			defaultHierarchy: LocalDateTable_8f9fd083-3f1d-4453-b948-73727ee6729d.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column humidity
+		dataType: int64
+		formatString: 0
+		lineageTag: 28bb4b0d-5cd7-4e2e-86f8-dd561feb6bcf
+		summarizeBy: sum
+		sourceColumn: humidity
+
+		annotation SummarizationSetBy = Automatic
+
+	column temperature
+		dataType: int64
+		formatString: 0
+		lineageTag: 6e152c0e-0318-4542-93b3-3c6a2f57e937
+		summarizeBy: sum
+		sourceColumn: temperature
+
+		annotation SummarizationSetBy = Automatic
+
+	column pm25_atm_a
+		dataType: double
+		lineageTag: 83812b6f-4878-49a0-ab51-be29a4776e50
+		summarizeBy: sum
+		sourceColumn: pm25_atm_a
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column pm25_atm_b
+		dataType: double
+		lineageTag: e65a5366-6e38-4cca-a291-e36c76282217
+		summarizeBy: sum
+		sourceColumn: pm25_atm_b
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column pm25_cf_1_a
+		dataType: double
+		lineageTag: 56db1b7b-d85b-4322-9172-f11165b1f8f7
+		summarizeBy: sum
+		sourceColumn: pm25_cf_1_a
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column pm25_cf_1_b
+		dataType: double
+		lineageTag: 1a37cbe8-4bca-43b9-bd2b-9cac9b6e03ae
+		summarizeBy: sum
+		sourceColumn: pm25_cf_1_b
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column pm25_nowcast_value
+		dataType: double
+		lineageTag: c247d18b-c327-4f99-9bed-4cef84b61bf6
+		summarizeBy: sum
+		sourceColumn: pm25_nowcast_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column pm25_raw_concentration
+		dataType: double
+		lineageTag: 16074bd3-c509-4e93-b1e7-3ba74673f324
+		summarizeBy: sum
+		sourceColumn: pm25_raw_concentration
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition data_matched = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\juwri\Downloads\Air Quality Project\data\data_matched.csv"),[Delimiter=",", Columns=12, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", Int64.Type}, {"Column2", Int64.Type}, {"Column3", type number}, {"Column4", type datetime}, {"Column5", Int64.Type}, {"Column6", Int64.Type}, {"Column7", type number}, {"Column8", type number}, {"Column9", type number}, {"Column10", type number}, {"Column11", type number}, {"Column12", type number}}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"Column1", "sensor_index"}, {"Column2", "site_id"}, {"Column3", "dist_miles"}, {"Column4", "datetime_timestamp"}, {"Column5", "humidity"}, {"Column6", "temperature"}, {"Column7", "pm25_atm_a"}, {"Column8", "pm25_atm_b"}, {"Column9", "pm25_cf_1_a"}, {"Column10", "pm25_cf_1_b"}, {"Column11", "pm25_nowcast_value"}, {"Column12", "pm25_raw_concentration"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

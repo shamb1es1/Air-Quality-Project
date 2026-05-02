@@ -30,3 +30,12 @@ relationship 14ec9494-b5a1-40b8-8b41-50d38de60b72
 	fromColumn: minimal_purpleair_sensor_data.utc
 	toColumn: LocalDateTable_cedc6772-f6be-4dd1-bb40-5927f1c94b63.Date
 
+relationship c98fb4c3-5c98-4102-8723-2e4d9f959574
+	joinOnDateBehavior: datePartOnly
+	fromColumn: data_matched.datetime_timestamp
+	toColumn: LocalDateTable_8f9fd083-3f1d-4453-b948-73727ee6729d.Date
+
+relationship AutoDetected_ea7d9db8-7b2a-4d10-ae62-da5d4113900e
+	fromColumn: data_matched.sensor_index
+	toColumn: purpleair_sensors.sensor_index
+

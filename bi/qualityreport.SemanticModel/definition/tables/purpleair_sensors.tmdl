@@ -14,7 +14,7 @@ table purpleair_sensors
 		dataType: int64
 		formatString: 0
 		lineageTag: 951c3463-0c9a-4707-8c72-3e45ff90f86d
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: date_created
 
 		annotation SummarizationSetBy = Automatic
@@ -23,7 +23,7 @@ table purpleair_sensors
 		dataType: int64
 		formatString: 0
 		lineageTag: ceab2e44-f2bd-44b8-8a14-ee3b7787507c
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: last_seen
 
 		annotation SummarizationSetBy = Automatic
@@ -40,7 +40,7 @@ table purpleair_sensors
 		dataType: int64
 		formatString: 0
 		lineageTag: fa074d08-fe4a-46ef-b5db-7fdaa6e2c2d2
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: uptime
 
 		annotation SummarizationSetBy = Automatic
@@ -48,7 +48,7 @@ table purpleair_sensors
 	column latitude
 		dataType: double
 		lineageTag: 52bd4d90-7636-4998-8d58-6c0b3d80cd11
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: latitude
 
 		annotation SummarizationSetBy = Automatic
@@ -58,7 +58,7 @@ table purpleair_sensors
 	column longitude
 		dataType: double
 		lineageTag: a03c7f09-b72d-406a-be6a-c017d1ece72a
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: longitude
 
 		annotation SummarizationSetBy = Automatic
