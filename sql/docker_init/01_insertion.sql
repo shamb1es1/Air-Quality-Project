@@ -15,7 +15,7 @@ CREATE TABLE staging_purpleair_sensors (
     longitude TEXT
 );
 
-LOAD DATA LOCAL INFILE 'C:/Users/juwri/Downloads/Air Quality Project/data/purpleair_sensors.csv'
+LOAD DATA INFILE '/data/purpleair_sensors.csv'
 INTO TABLE staging_purpleair_sensors
 FIELDS TERMINATED BY ','
 OPTIONALLY ENCLOSED BY '"'
@@ -34,7 +34,7 @@ CREATE TABLE staging_purpleair_sensor_data (
 	sensor_index TEXT
 );
 
-LOAD DATA LOCAL INFILE 'C:/Users/juwri/Downloads/Air Quality Project/data/purpleair_sensor_data.csv'
+LOAD DATA INFILE '/data/purpleair_sensor_data.csv'
 INTO TABLE staging_purpleair_sensor_data
 FIELDS TERMINATED BY ','
 OPTIONALLY ENCLOSED BY '"'
@@ -60,7 +60,7 @@ CREATE TABLE staging_airnow_sensor_data (
     intlaqscode TEXT
 );
 
-LOAD DATA LOCAL INFILE 'C:/Users/juwri/Downloads/Air Quality Project/data/airnow_sensor_data.csv'
+LOAD DATA INFILE '/data/airnow_sensor_data.csv'
 INTO TABLE staging_airnow_sensor_data
 FIELDS TERMINATED BY ','
 OPTIONALLY ENCLOSED BY '"'

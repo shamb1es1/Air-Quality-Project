@@ -11,11 +11,11 @@ services:
       MYSQL_DATABASE: air_quality_db
 
     ports:
-      - "3306:3306"
+      - "3307:3306"
 
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./sql/init:/docker-entrypoint-initdb.d
+      - ./sql/docker_init:/docker-entrypoint-initdb.d
       - ./data:/data
 
     command: --local-infile=1 --secure-file-priv=""

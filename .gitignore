@@ -2,3 +2,4 @@
 .env
 data/purpleair_cleaned.csv
 data/airnow_cleaned.csv
+mysql_data
