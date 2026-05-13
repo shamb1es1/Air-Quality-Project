@@ -1,0 +1,46 @@
+table distance_categories
+	lineageTag: 9db97080-5329-42bb-bc5b-c250b95de68c
+
+	column distance_label
+		lineageTag: 89715258-efbb-4b11-b535-378e5ba8f5c5
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [distance_label]
+
+		annotation SummarizationSetBy = Automatic
+
+	column distance_category_id
+		formatString: 0
+		lineageTag: 8890ca9b-d7b0-4586-aa4e-297ba8d4cdf8
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [distance_category_id]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition distance_categories = calculated
+		mode: import
+		source =
+				
+				DATATABLE(
+				    "distance_category_id", INTEGER,
+				    "distance_label", STRING,
+				    {
+				        {1, "≤0.1 mi"},
+				
+				        {1, "≤0.5 mi"},
+				        {2, "≤0.5 mi"},
+				
+				        {1, "≤1.0 mi"},
+				        {2, "≤1.0 mi"},
+				        {3, "≤1.0 mi"},
+				
+				        {1, "All distances"},
+				        {2, "All distances"},
+				        {3, "All distances"},
+				        {4, "All distances"}
+				    }
+				)
+
+	annotation PBI_Id = 7ab3aff2f3f44f418ed25fdc983ede66
+

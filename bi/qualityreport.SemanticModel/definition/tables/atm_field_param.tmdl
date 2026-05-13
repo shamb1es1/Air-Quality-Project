@@ -1,0 +1,48 @@
+table atm_field_param
+	lineageTag: 4dcc6aec-0384-4af2-ba34-f0cded9ae464
+
+	column field_param
+		lineageTag: bebbe37d-68de-4578-871c-5ae4d4a2e274
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parameter Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Parameter Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parameter Fields'
+		isHidden
+		lineageTag: 020aa8bf-4347-4131-992a-fdbcbf7ee3a8
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parameter Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parameter Order'
+		isHidden
+		formatString: 0
+		lineageTag: b25d8543-bbde-463a-a7af-5b07198f5899
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition atm_field_param = calculated
+		mode: import
+		source =
+				{
+				    ("ATM A MAE", NAMEOF('minimal_data_matched'[mae_atm_a]), 0),
+				    ("ATM B MAE", NAMEOF('minimal_data_matched'[mae_atm_b]), 1)
+				}
+
+	annotation PBI_Id = f05f0d66e6864fde928fbf6eaf9c944c
+

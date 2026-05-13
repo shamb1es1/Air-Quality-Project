@@ -1,6 +1,139 @@
 table minimal_data_matched
 	lineageTag: ee2f18da-1467-4d57-b5ec-06d75edacebb
 
+	measure mae_atm_b =
+			
+			AVERAGEX(
+			    minimal_data_matched,
+			    ABS(minimal_data_matched[pm25_atm_b] - minimal_data_matched[pm25_nowcast_value])
+			)
+		lineageTag: fc86ce62-b9ec-47ef-9ae6-5949758cc47f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure correl_atm_a_to_airnow =
+			
+			VAR AvgX =
+			    AVERAGE(minimal_data_matched[pm25_atm_a])
+			VAR AvgY =
+			    AVERAGE(minimal_data_matched[pm25_nowcast_value])
+			VAR Numerator =
+			    SUMX(
+			        minimal_data_matched,
+			        (minimal_data_matched[pm25_atm_a] - AvgX)
+			            * (minimal_data_matched[pm25_nowcast_value] - AvgY)
+			    )
+			VAR DenominatorX =
+			    SUMX(
+			        minimal_data_matched,
+			        POWER(minimal_data_matched[pm25_atm_a] - AvgX, 2)
+			    )
+			VAR DenominatorY =
+			    SUMX(
+			        minimal_data_matched,
+			        POWER(minimal_data_matched[pm25_nowcast_value] - AvgY, 2)
+			    )
+			RETURN
+			    DIVIDE(
+			        Numerator,
+			        SQRT(DenominatorX * DenominatorY)
+			    )
+		lineageTag: e4281b2a-a489-417e-bb73-6b765f223a78
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure correl_atm_b_to_airnow =
+			
+			VAR AvgX =
+			    AVERAGE(minimal_data_matched[pm25_atm_b])
+			VAR AvgY =
+			    AVERAGE(minimal_data_matched[pm25_nowcast_value])
+			VAR Numerator =
+			    SUMX(
+			        minimal_data_matched,
+			        (minimal_data_matched[pm25_atm_b] - AvgX)
+			            * (minimal_data_matched[pm25_nowcast_value] - AvgY)
+			    )
+			VAR DenominatorX =
+			    SUMX(
+			        minimal_data_matched,
+			        POWER(minimal_data_matched[pm25_atm_b] - AvgX, 2)
+			    )
+			VAR DenominatorY =
+			    SUMX(
+			        minimal_data_matched,
+			        POWER(minimal_data_matched[pm25_nowcast_value] - AvgY, 2)
+			    )
+			RETURN
+			    DIVIDE(
+			        Numerator,
+			        SQRT(DenominatorX * DenominatorY)
+			    )
+		lineageTag: 24872f62-625a-443e-9b89-b3e609e65d37
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure bias_atm_a =
+			
+			AVERAGEX(
+			    minimal_data_matched,
+			    minimal_data_matched[pm25_atm_a] - minimal_data_matched[pm25_nowcast_value]
+			)
+		lineageTag: 81b9c15c-a3c8-49bd-8bee-3111cff62c0b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure bias_atm_b =
+			
+			AVERAGEX(
+			    minimal_data_matched,
+			    minimal_data_matched[pm25_atm_b] - minimal_data_matched[pm25_nowcast_value]
+			)
+		lineageTag: fe3322b5-d71d-4f54-927a-4125058bc260
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure correl_atm_a_to_atm_b =
+			
+			VAR AvgX =
+			    AVERAGE(minimal_data_matched[pm25_atm_a])
+			VAR AvgY =
+			    AVERAGE(minimal_data_matched[pm25_atm_b])
+			VAR Numerator =
+			    SUMX(
+			        minimal_data_matched,
+			        (minimal_data_matched[pm25_atm_a] - AvgX)
+			            * (minimal_data_matched[pm25_atm_b] - AvgY)
+			    )
+			VAR DenominatorX =
+			    SUMX(
+			        minimal_data_matched,
+			        POWER(minimal_data_matched[pm25_atm_a] - AvgX, 2)
+			    )
+			VAR DenominatorY =
+			    SUMX(
+			        minimal_data_matched,
+			        POWER(minimal_data_matched[pm25_atm_b] - AvgY, 2)
+			    )
+			RETURN
+			    DIVIDE(
+			        Numerator,
+			        SQRT(DenominatorX * DenominatorY)
+			    )
+		lineageTag: c1f8216b-00e3-4d9a-97bb-ec9443a1fc1f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure mae_atm_a =
+			
+			AVERAGEX(
+			    minimal_data_matched,
+			    ABS(minimal_data_matched[pm25_atm_a] - minimal_data_matched[pm25_nowcast_value])
+			)
+		lineageTag: e8c9ea92-c606-43d1-9e79-c733a524cf18
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column sensor_index
 		formatString: 0
 		lineageTag: 2c501460-e5d9-47af-a683-f6d622edca53
@@ -111,6 +244,80 @@ table minimal_data_matched
 		summarizeBy: sum
 		isNameInferred
 		sourceColumn: data_matched[pm25_raw_concentration]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column pm25_bin_id =
+			
+			SWITCH(
+			    TRUE(),
+			    minimal_data_matched[pm25_nowcast_value] < 5, 1,
+			    minimal_data_matched[pm25_nowcast_value] < 10, 2,
+			    minimal_data_matched[pm25_nowcast_value] < 25, 3,
+			    minimal_data_matched[pm25_nowcast_value] < 50, 4,
+			    minimal_data_matched[pm25_nowcast_value] < 100, 5,
+			    6
+			)
+		formatString: 0
+		lineageTag: 4ce11c9a-089c-48f0-bc92-50ca350fb868
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column distance_category_id =
+			
+			SWITCH(
+			    TRUE(),
+			    minimal_data_matched[dist_miles] <= 0.1, 1,
+			    minimal_data_matched[dist_miles] <= 0.5, 2,
+			    minimal_data_matched[dist_miles] <= 1.0, 3,
+			    4
+			)
+		formatString: 0
+		lineageTag: d5ccba76-6960-45cf-8b0b-49fab641d8f8
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column humidity_bin_id =
+			
+			SWITCH(
+			    TRUE(),
+			    minimal_data_matched[humidity] < 20, 1,
+			    minimal_data_matched[humidity] < 40, 2,
+			    minimal_data_matched[humidity] < 60, 3,
+			    minimal_data_matched[humidity] < 80, 4,
+			    5
+			)
+		formatString: 0
+		lineageTag: 096a4e48-faa3-4f54-b071-f54a1eafde3d
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column test_mae_a =
+			
+			minimal_data_matched[pm25_atm_a]
+			-
+			minimal_data_matched[pm25_nowcast_value]
+		lineageTag: d0c6fb94-babd-42ec-9217-f4bae49856cc
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column atm_a_b_difference =
+			
+			ABS(
+			    minimal_data_matched[pm25_atm_a]
+			    -
+			    minimal_data_matched[pm25_atm_b]
+			)
+		lineageTag: c9af6d35-2314-48ff-8f44-729241cea667
+		summarizeBy: sum
 
 		annotation SummarizationSetBy = Automatic
 

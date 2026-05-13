@@ -90,13 +90,15 @@
           "properties": {
             "text": {
               "expr": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "purpleair_sensor_data"
-                    }
-                  },
-                  "Property": "formula_title"
+                "Literal": {
+                  "Value": "'PM2.5 of ATM A and B'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
                 }
               }
             }
@@ -169,54 +171,34 @@
             }
           }
         }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "divider": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "39d5ed2f73cf5b63bf7f",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "purpleair_sensor_data"
-              }
-            },
-            "Property": "utc"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "32ed0dbfc80f28e92418",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "purpleair_sensor_data"
-              }
-            },
-            "Property": "pm25_selected_a"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "40ca18abbb11d23c9af8",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "purpleair_sensor_data"
-              }
-            },
-            "Property": "pm25_selected_b"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }

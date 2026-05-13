@@ -4,7 +4,7 @@
   "position": {
     "x": 558.33333333333337,
     "y": 16.666666666666668,
-    "z": 4000,
+    "z": 3000,
     "height": 93.75,
     "width": 720.83333333333337,
     "tabOrder": 3000
@@ -248,23 +248,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "af59409befa23ded49b9",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "date_table"
-              }
-            },
-            "Property": "utcdt"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }

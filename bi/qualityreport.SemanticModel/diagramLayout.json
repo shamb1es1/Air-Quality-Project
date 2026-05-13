@@ -19,7 +19,7 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 4
+          "zIndex": 5
         },
         {
           "location": {
@@ -32,7 +32,7 @@
             "height": 272,
             "width": 234
           },
-          "zIndex": 3
+          "zIndex": 4
         },
         {
           "location": {
@@ -45,7 +45,7 @@
             "height": 248,
             "width": 234
           },
-          "zIndex": 6
+          "zIndex": 7
         },
         {
           "location": {
@@ -62,8 +62,8 @@
         },
         {
           "location": {
-            "x": 1670,
-            "y": 625.16666603088379
+            "x": 1318,
+            "y": 443.16666603088379
           },
           "nodeIndex": "formula_selector",
           "nodeLineageTag": "5746c957-9719-49fb-b5d8-b1d25661cda9",
@@ -71,7 +71,7 @@
             "height": 200,
             "width": 234
           },
-          "zIndex": 1
+          "zIndex": 2
         },
         {
           "location": {
@@ -84,12 +84,12 @@
             "height": 272,
             "width": 234
           },
-          "zIndex": 2
+          "zIndex": 3
         },
         {
           "location": {
-            "x": 674,
-            "y": 711.16666603088379
+            "x": 366,
+            "y": 1039.1666660308838
           },
           "nodeIndex": "minimal_purpleair_sensor_data",
           "nodeLineageTag": "45a04c62-81db-42f2-ba7f-aaf583d1623b",
@@ -97,7 +97,7 @@
             "height": 200,
             "width": 234
           },
-          "zIndex": 7
+          "zIndex": 10
         },
         {
           "location": {
@@ -110,12 +110,12 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 5
+          "zIndex": 6
         },
         {
           "location": {
-            "x": 282,
-            "y": 584.16666603088379
+            "x": 358,
+            "y": 552.16666603088379
           },
           "nodeIndex": "minimal_data_matched",
           "nodeLineageTag": "ee2f18da-1467-4d57-b5ec-06d75edacebb",
@@ -124,6 +124,57 @@
             "width": 234
           },
           "zIndex": 8
+        },
+        {
+          "location": {
+            "x": 662,
+            "y": 713.16666603088379
+          },
+          "nodeIndex": "pm25_bins",
+          "nodeLineageTag": "b878c7f7-9524-4f70-9d19-ca666bec5f3f",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 680,
+            "y": 981.58333301544189
+          },
+          "nodeIndex": "distance_categories",
+          "nodeLineageTag": "9db97080-5329-42bb-bc5b-c250b95de68c",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1018,
+            "y": 865.58333301544189
+          },
+          "nodeIndex": "humidity_bins",
+          "nodeLineageTag": "785ac2ea-bd91-4a94-9683-8f6e291f6836",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1602,
+            "y": 543.58333301544189
+          },
+          "nodeIndex": "atm_field_param",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
         }
       ],
       "name": "All tables",

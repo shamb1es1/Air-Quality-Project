@@ -1,0 +1,41 @@
+table pm25_bins
+	lineageTag: b878c7f7-9524-4f70-9d19-ca666bec5f3f
+
+	column pm25_bin_id
+		formatString: 0
+		lineageTag: 0bd17b32-a5de-49c2-ba6d-b150c0f2675f
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: minimal_data_matched[pm25_bin_id]
+
+		annotation SummarizationSetBy = Automatic
+
+	column bin_label
+		lineageTag: af5cca0a-e9aa-4abc-9871-5c0634e67c57
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [bin_label]
+		sortByColumn: pm25_bin_id
+
+		annotation SummarizationSetBy = Automatic
+
+	partition pm25_bins = calculated
+		mode: import
+		source =
+				
+				ADDCOLUMNS(
+				    DISTINCT(minimal_data_matched[pm25_bin_id]),
+				    "bin_label",
+				    SWITCH(
+				        [pm25_bin_id],
+				        1, "0–5",
+				        2, "5–10",
+				        3, "10–25",
+				        4, "25–50",
+				        5, "50–100",
+				        6, "100+"
+				    )
+				)
+
+	annotation PBI_Id = a6101e6abde14557adb42646c353e278
+

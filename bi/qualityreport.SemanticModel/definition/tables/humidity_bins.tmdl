@@ -1,0 +1,38 @@
+table humidity_bins
+	lineageTag: 785ac2ea-bd91-4a94-9683-8f6e291f6836
+
+	column humidity_bin
+		formatString: 0
+		lineageTag: 2975240b-b7e9-44ba-a67b-25fa39e9c7c9
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [humidity_bin]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Humidity Bin Label'
+		lineageTag: aeef6cff-6924-48cd-bd17-9dce6e1e06cb
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Humidity Bin Label]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition humidity_bins = calculated
+		mode: import
+		source =
+				
+				DATATABLE(
+				    "humidity_bin", INTEGER,
+				    "Humidity Bin Label", STRING,
+				    {
+				        {1, "0–20"},
+				        {2, "20–40"},
+				        {3, "40–60"},
+				        {4, "60–80"},
+				        {5, "80–100"}
+				    }
+				)
+
+	annotation PBI_Id = fa9b981aefe24843ab6c0436db2bad71
+

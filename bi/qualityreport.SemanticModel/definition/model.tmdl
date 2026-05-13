@@ -25,6 +25,10 @@ ref table minimal_purpleair_sensor_data
 ref table LocalDateTable_cedc6772-f6be-4dd1-bb40-5927f1c94b63
 ref table data_matched
 ref table minimal_data_matched
+ref table pm25_bins
+ref table distance_categories
+ref table humidity_bins
+ref table atm_field_param
 
 ref cultureInfo en-US
 

@@ -4,10 +4,10 @@
   "position": {
     "x": 387.5,
     "y": 172.91666666666669,
-    "z": 4003,
+    "z": 6000,
     "height": 233.33333333333334,
     "width": 168.75,
-    "tabOrder": 4003
+    "tabOrder": 6000
   },
   "visual": {
     "visualType": "slicer",
@@ -185,23 +185,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "02ece60071ba6cfbc672",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "formula_selector"
-              }
-            },
-            "Property": "Formula"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }

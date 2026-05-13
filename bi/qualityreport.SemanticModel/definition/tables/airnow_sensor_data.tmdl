@@ -136,3 +136,5 @@ table airnow_sensor_data
 
 	annotation PBI_ResultType = Table
 
+	annotation PBI_NavigationStepName = Navigation
+

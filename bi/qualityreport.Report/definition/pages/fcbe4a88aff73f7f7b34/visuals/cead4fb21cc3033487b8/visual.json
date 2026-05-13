@@ -4,7 +4,7 @@
   "position": {
     "x": 0,
     "y": 459.21612955316158,
-    "z": 3000,
+    "z": 2000,
     "height": 260.78940690673375,
     "width": 359.05787907448848,
     "tabOrder": 2000
@@ -119,23 +119,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "53b41ae47f8044e40365",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "date_table"
-              }
-            },
-            "Property": "monthName"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }

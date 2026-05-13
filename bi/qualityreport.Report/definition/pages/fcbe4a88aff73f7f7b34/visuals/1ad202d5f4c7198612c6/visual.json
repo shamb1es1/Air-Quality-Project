@@ -122,21 +122,21 @@
             "zoom": {
               "expr": {
                 "Literal": {
-                  "Value": "5.55D"
+                  "Value": "0D"
                 }
               }
             },
             "centerLatitude": {
               "expr": {
                 "Literal": {
-                  "Value": "40.2047507743446D"
+                  "Value": "0D"
                 }
               }
             },
             "centerLongitude": {
               "expr": {
                 "Literal": {
-                  "Value": "-74.71091000000001D"
+                  "Value": "0D"
                 }
               }
             }
@@ -199,6 +199,19 @@
         }
       ],
       "heatMapLayer": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "filledMap": [
         {
           "properties": {
             "show": {
