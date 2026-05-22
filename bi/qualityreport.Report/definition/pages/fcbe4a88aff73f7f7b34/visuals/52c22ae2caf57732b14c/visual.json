@@ -1,62 +1,99 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
   "name": "52c22ae2caf57732b14c",
   "position": {
-    "x": 386.9955724225174,
-    "y": 85.819101834282108,
-    "z": 14000,
-    "height": 299.55724225173941,
-    "width": 299.55724225173941,
-    "tabOrder": 14000
+    "x": 519.50157469533065,
+    "y": 94.646035875667536,
+    "z": 15000,
+    "height": 199.80829795974256,
+    "width": 744.54881555525128,
+    "tabOrder": 13000
   },
   "visual": {
-    "visualType": "slicer",
+    "visualType": "lineChart",
     "query": {
       "queryState": {
-        "Values": {
+        "Category": {
           "projections": [
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "purpleair_sensor_data"
+                      "Entity": "date_table"
                     }
                   },
-                  "Property": "is_reliable"
+                  "Property": "utcdt"
                 }
               },
-              "queryRef": "purpleair_sensor_data.is_reliable",
-              "nativeQueryRef": "is_reliable",
+              "queryRef": "date_table.utcdt",
+              "nativeQueryRef": "utcdt",
               "active": true
             }
           ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "purpleair_sensor_data"
+                    }
+                  },
+                  "Property": "avg_pm25_a"
+                }
+              },
+              "queryRef": "purpleair_sensor_data.avg_pm25_a",
+              "nativeQueryRef": "avg_pm25_a"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "purpleair_sensor_data"
+                    }
+                  },
+                  "Property": "avg_pm25_b"
+                }
+              },
+              "queryRef": "purpleair_sensor_data.avg_pm25_b",
+              "nativeQueryRef": "avg_pm25_b"
+            }
+          ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "date_table"
+                  }
+                },
+                "Property": "utcdt"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
       }
     },
     "objects": {
-      "data": [
-        {
-          "properties": {
-            "mode": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Basic'"
-                }
-              }
-            }
-          }
-        }
-      ],
       "general": [
         {
           "properties": {}
         }
       ],
-      "header": [
+      "lineStyles": [
         {
           "properties": {
-            "show": {
+            "areaShow": {
               "expr": {
                 "Literal": {
                   "Value": "false"
@@ -66,23 +103,16 @@
           }
         }
       ],
-      "items": [
+      "categoryAxis": [
         {
           "properties": {
-            "fontFamily": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Consolas'"
-                }
-              }
-            },
-            "fontColor": {
+            "labelColor": {
               "solid": {
                 "color": {
                   "expr": {
                     "ThemeDataColor": {
                       "ColorId": 1,
-                      "Percent": 0
+                      "Percent": 0.4
                     }
                   }
                 }
@@ -90,26 +120,28 @@
             }
           }
         }
+      ],
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#F58C02'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "purpleair_sensor_data.avg_pm25_a"
+          }
+        }
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "8c79bed5c7be1c09da38",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "purpleair_sensor_data"
-              }
-            },
-            "Property": "is_reliable"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }
