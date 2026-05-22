@@ -1,12 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "9054eabc0787eb7f962b",
   "position": {
     "x": 0,
     "y": 58.345192108625852,
     "z": 8000,
     "height": 113.55568757249144,
-    "width": 221.31771761577414
+    "width": 221.31771761577414,
+    "tabOrder": 2000
   },
   "visual": {
     "visualType": "slicer",
@@ -217,23 +218,5 @@
     },
     "drillFilterOtherVisuals": true
   },
-  "parentGroupName": "5dadea9dcf29810c4bc6",
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "61079648acf5e9a24424",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "distance_categories"
-              }
-            },
-            "Property": "distance_label"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
-  }
+  "parentGroupName": "5dadea9dcf29810c4bc6"
 }

@@ -20,11 +20,6 @@ relationship da0f448f-45ab-5981-0be1-38561898f7f7
 	fromColumn: purpleair_sensor_data.utc
 	toColumn: date_table.utcdt
 
-relationship 14ec9494-b5a1-40b8-8b41-50d38de60b72
-	joinOnDateBehavior: datePartOnly
-	fromColumn: minimal_purpleair_sensor_data.utc
-	toColumn: LocalDateTable_cedc6772-f6be-4dd1-bb40-5927f1c94b63.Date
-
 relationship AutoDetected_ea7d9db8-7b2a-4d10-ae62-da5d4113900e
 	fromColumn: data_matched.sensor_index
 	toColumn: purpleair_sensors.sensor_index
@@ -36,10 +31,6 @@ relationship 97cea113-20af-f7bb-44f4-6fa6014ffd14
 relationship 2d6a33c5-4eaa-5647-3be5-4503469c4f29
 	fromColumn: airnow_cleaned.datetime_timestamp
 	toColumn: date_table.utcdt
-
-relationship 3ed0da83-d240-8164-812e-6296ba0c8f46
-	fromColumn: minimal_purpleair_sensor_data.sensor_index
-	toColumn: purpleair_sensors.sensor_index
 
 relationship 5b1b43b6-ed75-5fb1-0bd5-8beb14e05a41
 	fromColumn: minimal_data_matched.pm25_bin_id
@@ -61,4 +52,21 @@ relationship 77961e06-d277-ae53-3b8e-f3c5d1ddcd37
 	toCardinality: many
 	fromColumn: minimal_data_matched.distance_category_id
 	toColumn: distance_categories.distance_category_id
+
+relationship ceda352f-626a-ac21-d886-4d1ef815ad15
+	fromColumn: purpleair_cleaned.datetime_timestamp
+	toColumn: date_table.utcdt
+
+relationship 1399d7a7-b5d8-d963-7c45-ccb0a25677c0
+	fromColumn: purpleair_cleaned.sensor_index
+	toColumn: purpleair_sensors.sensor_index
+
+relationship 3ed0da83-d240-8164-812e-6296ba0c8f46
+	fromColumn: minimal_purpleair_sensor_data.sensor_index
+	toColumn: purpleair_sensors.sensor_index
+
+relationship 4ce6ec9d-f53b-4993-9fc7-62f971ecff15
+	joinOnDateBehavior: datePartOnly
+	fromColumn: minimal_purpleair_sensor_data.datetime_timestamp
+	toColumn: LocalDateTable_ba9b8c84-e565-40a4-8e6d-9fe0a0a96d03.Date
 

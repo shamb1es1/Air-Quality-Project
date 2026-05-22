@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "a30cac386271a795d668",
   "position": {
     "x": 10.428583552575745,
@@ -293,37 +293,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "ac5ad498f8a9523d775c",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "pm25_bins"
-              }
-            },
-            "Property": "bin_label"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "d602c50f460fcd9bfa31",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "date_table"
-              }
-            },
-            "Property": "utcdt"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }

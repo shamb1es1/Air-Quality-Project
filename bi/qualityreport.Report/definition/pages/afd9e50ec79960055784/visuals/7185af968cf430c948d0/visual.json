@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "7185af968cf430c948d0",
   "position": {
     "x": 13.904778070100974,
@@ -95,6 +95,43 @@
               }
             }
           }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#F58C02'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "minimal_data_matched.mae_atm_a1"
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 3,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "minimal_data_matched.mae_atm_b"
+          }
         }
       ],
       "legend": [
@@ -135,6 +172,25 @@
               }
             },
             "titleColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 1,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Consolas'"
+                }
+              }
+            },
+            "labelColor": {
               "solid": {
                 "color": {
                   "expr": {
@@ -272,51 +328,5 @@
     },
     "drillFilterOtherVisuals": true
   },
-  "parentGroupName": "5ac702685534efe033e1",
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "8022e87c29a75f911b08",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "humidity_bins"
-              }
-            },
-            "Property": "Humidity Bin Label"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "265210090d77200fa569",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "minimal_data_matched"
-              }
-            },
-            "Property": "mae_atm_a"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "3bff18da543ff9b728a4",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "minimal_data_matched"
-              }
-            },
-            "Property": "mae_atm_b"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
-  }
+  "parentGroupName": "5ac702685534efe033e1"
 }

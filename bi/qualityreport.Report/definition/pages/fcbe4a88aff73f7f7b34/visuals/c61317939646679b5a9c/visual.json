@@ -1,13 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "c61317939646679b5a9c",
   "position": {
-    "x": 16.666666666666668,
-    "y": 16.666666666666668,
-    "z": 4000,
-    "height": 139.58333333333334,
-    "width": 508.33333333333337,
-    "tabOrder": 4000
+    "x": 0,
+    "y": 0,
+    "z": 7000,
+    "height": 58.292220113852,
+    "width": 1275.9519291587603,
+    "tabOrder": 3000
   },
   "visual": {
     "visualType": "textbox",
@@ -22,7 +22,8 @@
                     "value": "Preliminary Look at PurpleAir Sensor Data",
                     "textStyle": {
                       "fontWeight": "bold",
-                      "fontSize": "36pt"
+                      "fontFamily": "Consolas",
+                      "fontSize": "32pt"
                     }
                   }
                 ]
@@ -39,7 +40,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -53,7 +54,7 @@
             "angle": {
               "expr": {
                 "Literal": {
-                  "Value": "180L"
+                  "Value": "225L"
                 }
               }
             },

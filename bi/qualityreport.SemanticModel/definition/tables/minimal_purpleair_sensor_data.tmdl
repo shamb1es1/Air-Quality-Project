@@ -1,101 +1,82 @@
 table minimal_purpleair_sensor_data
 	lineageTag: 45a04c62-81db-42f2-ba7f-aaf583d1623b
 
-	column time_stamp
+	column sensor_index
 		formatString: 0
-		lineageTag: c87e5847-7f66-4e62-b338-aa29b43d86bd
-		summarizeBy: sum
+		lineageTag: d7de0303-c34e-4425-9da1-067f7c43aae2
+		summarizeBy: none
 		isNameInferred
-		sourceColumn: purpleair_sensor_data[time_stamp]
+		sourceColumn: purpleair_cleaned[sensor_index]
+
+		annotation SummarizationSetBy = Automatic
+
+	column datetime_timestamp
+		formatString: General Date
+		lineageTag: 1ecad1f4-d9c3-4bdd-aebb-c6a679bb1a4c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: purpleair_cleaned[datetime_timestamp]
+
+		variation Variation
+			isDefault
+			relationship: 4ce6ec9d-f53b-4993-9fc7-62f971ecff15
+			defaultHierarchy: LocalDateTable_ba9b8c84-e565-40a4-8e6d-9fe0a0a96d03.'Date Hierarchy'
 
 		annotation SummarizationSetBy = Automatic
 
 	column humidity
 		formatString: 0
-		lineageTag: 176d23ec-2382-4477-82cc-8ced342d3472
+		lineageTag: 0bab7a62-5e5c-4bbe-8602-1177a253a0ec
 		summarizeBy: sum
 		isNameInferred
-		sourceColumn: purpleair_sensor_data[humidity]
+		sourceColumn: purpleair_cleaned[humidity]
 
 		annotation SummarizationSetBy = Automatic
 
 	column temperature
 		formatString: 0
-		lineageTag: f1f616ef-a3d5-4130-8d05-4e5030f9fdd9
+		lineageTag: 921590d7-c516-47e7-8002-383b83691c59
 		summarizeBy: sum
 		isNameInferred
-		sourceColumn: purpleair_sensor_data[temperature]
+		sourceColumn: purpleair_cleaned[temperature]
 
 		annotation SummarizationSetBy = Automatic
 
-	column 'pm2.5_atm_a'
-		lineageTag: 2eac5552-7a6f-4065-9e60-287512366874
+	column pm25_atm_a
+		lineageTag: 8ec61eaa-9c1b-428e-bd80-2d5ae2366c0f
 		summarizeBy: sum
 		isNameInferred
-		sourceColumn: purpleair_sensor_data[pm2.5_atm_a]
+		sourceColumn: purpleair_cleaned[pm25_atm_a]
 
 		annotation SummarizationSetBy = Automatic
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	column 'pm2.5_atm_b'
-		lineageTag: a3c4709e-1dfc-4aca-96b0-58279d96e103
+	column pm25_atm_b
+		lineageTag: 3767be66-4f6f-40b3-9c19-1d125db3f2f2
 		summarizeBy: sum
 		isNameInferred
-		sourceColumn: purpleair_sensor_data[pm2.5_atm_b]
+		sourceColumn: purpleair_cleaned[pm25_atm_b]
 
 		annotation SummarizationSetBy = Automatic
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	column 'pm2.5_cf_1_a'
-		lineageTag: a26779c7-1c1b-4428-8e35-f86d59a18ff4
+	column pm25_cf_1_a
+		lineageTag: 376718ac-1f1b-43df-ae4d-5f1b99b12363
 		summarizeBy: sum
 		isNameInferred
-		sourceColumn: purpleair_sensor_data[pm2.5_cf_1_a]
+		sourceColumn: purpleair_cleaned[pm25_cf_1_a]
 
 		annotation SummarizationSetBy = Automatic
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	column 'pm2.5_cf_1_b'
-		lineageTag: a9a2e3a6-5da6-4857-9a69-17ecdca6be84
+	column pm25_cf_1_b
+		lineageTag: c17c08c3-adc8-42fd-83ad-41f7ecf0778a
 		summarizeBy: sum
 		isNameInferred
-		sourceColumn: purpleair_sensor_data[pm2.5_cf_1_b]
-
-		annotation SummarizationSetBy = Automatic
-
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
-
-	column sensor_index
-		formatString: 0
-		lineageTag: 65854511-34a5-4168-a99c-720a78f9435f
-		summarizeBy: none
-		isNameInferred
-		sourceColumn: purpleair_sensor_data[sensor_index]
-
-		annotation SummarizationSetBy = Automatic
-
-	column utc
-		formatString: General Date
-		lineageTag: bb484306-586d-4056-b006-828ad515e1ea
-		summarizeBy: none
-		isNameInferred
-		sourceColumn: purpleair_sensor_data[utc]
-
-		variation Variation
-			isDefault
-			relationship: 14ec9494-b5a1-40b8-8b41-50d38de60b72
-			defaultHierarchy: LocalDateTable_cedc6772-f6be-4dd1-bb40-5927f1c94b63.'Date Hierarchy'
-
-		annotation SummarizationSetBy = Automatic
-
-	column 'PM2.5 Avg Row'
-		lineageTag: 42a877c8-6029-441f-9687-bbcb9296d3d5
-		summarizeBy: sum
-		isNameInferred
-		sourceColumn: purpleair_sensor_data[PM2.5 Avg Row]
+		sourceColumn: purpleair_cleaned[pm25_cf_1_b]
 
 		annotation SummarizationSetBy = Automatic
 
@@ -106,11 +87,11 @@ table minimal_purpleair_sensor_data
 		source =
 				
 				FILTER(
-				    purpleair_sensor_data,
-				    purpleair_sensor_data[pm2.5_atm_a] <= MAX(airnow_cleaned[pm25_nowcast_value]) &&
-				    purpleair_sensor_data[pm2.5_atm_b] <= MAX(airnow_cleaned[pm25_nowcast_value]) &&
-				    purpleair_sensor_data[pm2.5_cf_1_a] <= MAX(airnow_cleaned[pm25_nowcast_value]) &&
-				    purpleair_sensor_data[pm2.5_cf_1_b] <= MAX(airnow_cleaned[pm25_nowcast_value])
+				    purpleair_cleaned,
+				    purpleair_cleaned[pm25_atm_a] <= MAX(airnow_cleaned[pm25_nowcast_value]) &&
+				    purpleair_cleaned[pm25_atm_b] <= MAX(airnow_cleaned[pm25_nowcast_value]) &&
+				    purpleair_cleaned[pm25_cf_1_a] <= MAX(airnow_cleaned[pm25_nowcast_value]) &&
+				    purpleair_cleaned[pm25_cf_1_b] <= MAX(airnow_cleaned[pm25_nowcast_value])
 				)
 
 	annotation PBI_Id = ae75f8171e874539ba5a04f9117be66d

@@ -52,6 +52,18 @@ table purpleair_sensor_data
 			    "PM2.5 " & SelectedFormula & " A vs B"
 		lineageTag: c084dd6d-81b0-43cd-a45f-459e693f1a0a
 
+	measure count_w_l = COUNT(purpleair_sensor_data[is_reliable])
+		formatString: 0
+		lineageTag: 4458d2c3-c715-4a98-93e7-a867c0f87152
+
+	measure sensor_count = DISTINCTCOUNT(purpleair_sensor_data[sensor_index])
+		formatString: 0
+		lineageTag: 423b1ab9-2c89-416f-94dc-9dc79b7bf5a2
+
+	measure reading_count = COUNTROWS(purpleair_sensor_data)
+		formatString: 0
+		lineageTag: 07f1e199-2388-4de1-b264-117de2472dd3
+
 	column time_stamp
 		dataType: int64
 		formatString: 0
@@ -145,6 +157,22 @@ table purpleair_sensor_data
 		annotation SummarizationSetBy = Automatic
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column is_reliable =
+			
+			IF(
+			    CONTAINS(
+			        purpleair_cleaned,
+			        purpleair_cleaned[sensor_index], purpleair_sensor_data[sensor_index],
+			        purpleair_cleaned[datetime_timestamp], purpleair_sensor_data[utc]
+			    ),
+			    "Valid",
+			    "Invalid"
+			)
+		lineageTag: fc3bafc7-3ee6-4917-b0b1-3389fdf6f8f8
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
 
 	partition purpleair_sensor_data = m
 		mode: import

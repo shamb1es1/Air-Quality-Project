@@ -5,7 +5,7 @@
       "ordinal": 0,
       "scrollPosition": {
         "x": 0,
-        "y": 0
+        "y": 376
       },
       "nodes": [
         {
@@ -19,12 +19,12 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 5
+          "zIndex": 8
         },
         {
           "location": {
             "x": 0,
-            "y": 342
+            "y": 376
           },
           "nodeIndex": "purpleair_sensor_data",
           "nodeLineageTag": "a505f67a-e830-44a1-922a-1a4bbc87014b",
@@ -32,12 +32,12 @@
             "height": 272,
             "width": 234
           },
-          "zIndex": 4
+          "zIndex": 7
         },
         {
           "location": {
-            "x": 40,
-            "y": 830.33333206176758
+            "x": 56,
+            "y": 1042.3333320617676
           },
           "nodeIndex": "purpleair_sensors",
           "nodeLineageTag": "ad848229-3c0d-463e-8741-67a21866c289",
@@ -45,7 +45,7 @@
             "height": 248,
             "width": 234
           },
-          "zIndex": 7
+          "zIndex": 10
         },
         {
           "location": {
@@ -58,7 +58,7 @@
             "height": 205,
             "width": 234
           },
-          "zIndex": 9
+          "zIndex": 12
         },
         {
           "location": {
@@ -71,7 +71,7 @@
             "height": 200,
             "width": 234
           },
-          "zIndex": 2
+          "zIndex": 5
         },
         {
           "location": {
@@ -84,12 +84,12 @@
             "height": 272,
             "width": 234
           },
-          "zIndex": 3
+          "zIndex": 6
         },
         {
           "location": {
-            "x": 366,
-            "y": 1039.1666660308838
+            "x": 104,
+            "y": 691.16666603088379
           },
           "nodeIndex": "minimal_purpleair_sensor_data",
           "nodeLineageTag": "45a04c62-81db-42f2-ba7f-aaf583d1623b",
@@ -97,7 +97,7 @@
             "height": 200,
             "width": 234
           },
-          "zIndex": 10
+          "zIndex": 13
         },
         {
           "location": {
@@ -110,12 +110,12 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 6
+          "zIndex": 9
         },
         {
           "location": {
-            "x": 358,
-            "y": 552.16666603088379
+            "x": 534,
+            "y": 422.16666603088379
           },
           "nodeIndex": "minimal_data_matched",
           "nodeLineageTag": "ee2f18da-1467-4d57-b5ec-06d75edacebb",
@@ -123,7 +123,7 @@
             "height": 200,
             "width": 234
           },
-          "zIndex": 8
+          "zIndex": 11
         },
         {
           "location": {
@@ -136,7 +136,7 @@
             "height": 200,
             "width": 234
           },
-          "zIndex": 1
+          "zIndex": 4
         },
         {
           "location": {
@@ -149,7 +149,7 @@
             "height": 200,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 1
         },
         {
           "location": {
@@ -162,7 +162,7 @@
             "height": 200,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 2
         },
         {
           "location": {
@@ -174,7 +174,20 @@
             "height": 152,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 372.6666259765625,
+            "y": 1041.5833330154419
+          },
+          "nodeIndex": "purpleair_cleaned",
+          "nodeLineageTag": "dd84637e-d4b4-4e2c-aa9a-a8944e9cd0ea",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 14
         }
       ],
       "name": "All tables",

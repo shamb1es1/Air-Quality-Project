@@ -31,6 +31,16 @@ cultureInfo en-US
 			            "State": "Generated",
 			            "Weight": 0.97
 			          }
+			        },
+			        {
+			          "ATM A MAE": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
 			        }
 			      ]
 			    },
@@ -4012,135 +4022,6 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "minimal_purpleair_sensor_data.time_stamp": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "minimal_purpleair_sensor_data",
-			          "ConceptualProperty": "time_stamp"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "time stamp": {
-			            "State": "Generated"
-			          }
-			        },
-			        {
-			          "time_stamp": {
-			            "Type": "Noun",
-			            "State": "Generated",
-			            "Weight": 0.99
-			          }
-			        },
-			        {
-			          "stamp": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "duration stamp": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.6
-			          }
-			        },
-			        {
-			          "interval stamp": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.6
-			          }
-			        },
-			        {
-			          "moment stamp": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.6
-			          }
-			        },
-			        {
-			          "period stamp": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.582
-			          }
-			        },
-			        {
-			          "timetable stamp": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.582
-			          }
-			        },
-			        {
-			          "time impression": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.5
-			          }
-			        },
-			        {
-			          "time endorsement": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.5
-			          }
-			        },
-			        {
-			          "time identification": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.5
-			          }
-			        },
-			        {
-			          "impression": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.491
-			          }
-			        },
-			        {
-			          "endorsement": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.491
-			          }
-			        }
-			      ]
-			    },
 			    "minimal_purpleair_sensor_data.humidity": {
 			      "Definition": {
 			        "Binding": {
@@ -4333,70 +4214,6 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "minimal_purpleair_sensor_data.pm2_5_atm_a": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "minimal_purpleair_sensor_data",
-			          "ConceptualProperty": "pm2.5_atm_a"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "pm2.5_atm_a": {
-			            "State": "Generated"
-			          }
-			        }
-			      ]
-			    },
-			    "minimal_purpleair_sensor_data.pm2_5_atm_b": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "minimal_purpleair_sensor_data",
-			          "ConceptualProperty": "pm2.5_atm_b"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "pm2.5_atm_b": {
-			            "State": "Generated"
-			          }
-			        }
-			      ]
-			    },
-			    "minimal_purpleair_sensor_data.pm2_5_cf_1_a": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "minimal_purpleair_sensor_data",
-			          "ConceptualProperty": "pm2.5_cf_1_a"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "pm2.5_cf_1_a": {
-			            "State": "Generated"
-			          }
-			        }
-			      ]
-			    },
-			    "minimal_purpleair_sensor_data.pm2_5_cf_1_b": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "minimal_purpleair_sensor_data",
-			          "ConceptualProperty": "pm2.5_cf_1_b"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "pm2.5_cf_1_b": {
-			            "State": "Generated"
-			          }
-			        }
-			      ]
-			    },
 			    "minimal_purpleair_sensor_data.sensor_index": {
 			      "Definition": {
 			        "Binding": {
@@ -4528,29 +4345,6 @@ cultureInfo en-US
 			          }
 			        }
 			      ]
-			    },
-			    "minimal_purpleair_sensor_data.utc": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "minimal_purpleair_sensor_data",
-			          "ConceptualProperty": "utc"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "utc": {
-			            "State": "Generated"
-			          }
-			        },
-			        {
-			          "date": {
-			            "State": "Generated",
-			            "Weight": 0.7
-			          }
-			        }
-			      ],
-			      "SemanticType": "Time"
 			    },
 			    "minimal_purpleair_sensor_data.utc.date_hierarchy": {
 			      "Definition": {
@@ -4736,42 +4530,6 @@ cultureInfo en-US
 			        }
 			      ],
 			      "SemanticType": "Time"
-			    },
-			    "minimal_purpleair_sensor_data.PM2_5_avg_row": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "minimal_purpleair_sensor_data",
-			          "ConceptualProperty": "PM2.5 Avg Row"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "PM2.5 avg row": {
-			            "State": "Generated"
-			          }
-			        },
-			        {
-			          "pm2.5 avg line": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.757
-			          }
-			        },
-			        {
-			          "pm2.5 average row": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.605
-			          }
-			        }
-			      ]
 			    },
 			    "data_matched": {
 			      "Definition": {

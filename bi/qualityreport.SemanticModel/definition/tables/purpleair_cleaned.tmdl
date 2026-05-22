@@ -1,0 +1,93 @@
+table purpleair_cleaned
+	lineageTag: dd84637e-d4b4-4e2c-aa9a-a8944e9cd0ea
+
+	column sensor_index
+		dataType: int64
+		formatString: 0
+		lineageTag: 31b37e64-3056-4d4d-971f-511ac47d7de6
+		summarizeBy: none
+		sourceColumn: sensor_index
+
+		annotation SummarizationSetBy = Automatic
+
+	column datetime_timestamp
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 6da8a788-5c35-47ad-88a8-1cb1bb636c11
+		summarizeBy: none
+		sourceColumn: datetime_timestamp
+
+		annotation SummarizationSetBy = Automatic
+
+	column humidity
+		dataType: int64
+		formatString: 0
+		lineageTag: ebdbba57-3fc1-46f8-b6a1-a70a0b0e4963
+		summarizeBy: sum
+		sourceColumn: humidity
+
+		annotation SummarizationSetBy = Automatic
+
+	column temperature
+		dataType: int64
+		formatString: 0
+		lineageTag: 5f907129-48b8-45d4-84dd-625416ad5039
+		summarizeBy: sum
+		sourceColumn: temperature
+
+		annotation SummarizationSetBy = Automatic
+
+	column pm25_atm_a
+		dataType: double
+		lineageTag: 7ee8abc6-49f4-4f04-ad31-b5421c701e92
+		summarizeBy: sum
+		sourceColumn: pm25_atm_a
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column pm25_atm_b
+		dataType: double
+		lineageTag: 5268bdfb-1594-441f-abad-806281e84aea
+		summarizeBy: sum
+		sourceColumn: pm25_atm_b
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column pm25_cf_1_a
+		dataType: double
+		lineageTag: 13b75df4-5e22-46c8-ba85-c5e3360c3ec3
+		summarizeBy: sum
+		sourceColumn: pm25_cf_1_a
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column pm25_cf_1_b
+		dataType: double
+		lineageTag: 3285b727-3a05-4d82-be4c-8bf43b43f928
+		summarizeBy: sum
+		sourceColumn: pm25_cf_1_b
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition purpleair_cleaned = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\juwri\Downloads\Air Quality Project\data\purpleair_cleaned.csv"),[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", Int64.Type}, {"Column2", type datetime}, {"Column3", Int64.Type}, {"Column4", Int64.Type}, {"Column5", type number}, {"Column6", type number}, {"Column7", type number}, {"Column8", type number}}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"Column1", "sensor_index"}, {"Column2", "datetime_timestamp"}, {"Column3", "humidity"}, {"Column4", "temperature"}, {"Column5", "pm25_atm_a"}, {"Column6", "pm25_atm_b"}, {"Column7", "pm25_cf_1_a"}, {"Column8", "pm25_cf_1_b"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
