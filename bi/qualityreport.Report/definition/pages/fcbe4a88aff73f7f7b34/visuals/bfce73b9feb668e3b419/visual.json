@@ -1,13 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "bfce73b9feb668e3b419",
   "position": {
     "x": 0,
-    "y": 42.099936748893107,
-    "z": 11000,
-    "height": 32.384566729917772,
-    "width": 1275.9519291587603,
-    "tabOrder": 5000
+    "y": 41.666666666666671,
+    "z": 2000,
+    "height": 33.333333333333336,
+    "width": 1125,
+    "tabOrder": 4000
   },
   "visual": {
     "visualType": "textbox",
@@ -22,7 +22,8 @@
                     "value": "Explore PurpleAir data prior to any cleaning, comparing PM2.5 and humidity over time and across sensors",
                     "textStyle": {
                       "fontFamily": "Consolas",
-                      "fontStyle": "italic"
+                      "fontStyle": "italic",
+                      "fontSize": "9pt"
                     }
                   }
                 ]

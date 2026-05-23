@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "030c0c97a71be73bd36e",
+  "position": {
+    "x": 8.4567683139460286,
+    "y": 8.5325915404040327,
+    "z": 26000,
+    "height": 32.16552734375,
+    "width": 101.11000379707656,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Sensor A Avg.",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontFamily": "Consolas",
+                      "fontSize": "9pt"
+                    }
+                  }
+                ],
+                "horizontalTextAlignment": "center"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "parentGroupName": "dc81284b15a95f028c26"
+}

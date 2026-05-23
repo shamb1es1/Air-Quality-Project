@@ -1,16 +1,6 @@
 table purpleair_sensor_data
 	lineageTag: a505f67a-e830-44a1-922a-1a4bbc87014b
 
-	measure 'avg_pm2.5' =
-			
-			AVERAGEX(
-			    purpleair_sensor_data,
-			    (purpleair_sensor_data[pm2.5_cf_1_a] + purpleair_sensor_data[pm2.5_cf_1_b]) / 2
-			)
-		lineageTag: c18bdbeb-8034-40b5-9cbf-5d1db0c5930a
-
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
-
 	measure avg_humidity = AVERAGE(purpleair_sensor_data[humidity])
 		lineageTag: d74a06af-28cd-4189-b3a9-7053c6d80e81
 
@@ -175,10 +165,32 @@ table purpleair_sensor_data
 
 		annotation SummarizationSetBy = Automatic
 
-	column 'PM2.5 Avg Row' =
+	column avg_pm25_selected =
 			
-			(purpleair_sensor_data[pm2.5_cf_1_a] +
-			 purpleair_sensor_data[pm2.5_cf_1_b]) / 2
+			VAR SelectedFormula =
+			    SELECTEDVALUE(formula_selector[Formula], "ATM")
+			RETURN
+			    SWITCH(
+			        SelectedFormula,
+			        "ATM",
+			            AVERAGEX(
+			                purpleair_sensor_data,
+			                DIVIDE(
+			                    purpleair_sensor_data[pm2.5_atm_a] +
+			                    purpleair_sensor_data[pm2.5_atm_b],
+			                    2
+			                )
+			            ),
+			        "CF1",
+			            AVERAGEX(
+			                purpleair_sensor_data,
+			                DIVIDE(
+			                    purpleair_sensor_data[pm2.5_cf_1_a] +
+			                    purpleair_sensor_data[pm2.5_cf_1_b],
+			                    2
+			                )
+			            )
+			    )
 		lineageTag: d2256380-d7f0-4e53-a921-89aa9531f559
 		summarizeBy: sum
 

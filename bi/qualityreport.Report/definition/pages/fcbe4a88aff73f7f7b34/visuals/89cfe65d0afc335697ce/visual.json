@@ -1,13 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "89cfe65d0afc335697ce",
   "position": {
-    "x": 406.97795426537039,
-    "y": 178.77584554292756,
-    "z": 17000,
-    "height": 67.303847733808027,
-    "width": 99.90414897987128,
-    "tabOrder": 15000
+    "x": 8.458973032028041,
+    "y": 8.4404507381909415,
+    "z": 18000,
+    "height": 72.314049586776861,
+    "width": 101.13636363636364,
+    "tabOrder": 1000
   },
   "visual": {
     "visualType": "cardVisual",
@@ -122,10 +122,30 @@
                   "Value": "'Consolas'"
                 }
               }
+            },
+            "horizontalAlignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'center'"
+                }
+              }
             }
           },
           "selector": {
             "id": "default"
+          }
+        }
+      ],
+      "layout": [
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'middle'"
+                }
+              }
+            }
           }
         }
       ]
@@ -146,5 +166,6 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  }
+  },
+  "parentGroupName": "5913fbda54b9180453eb"
 }

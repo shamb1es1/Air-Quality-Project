@@ -1609,7 +1609,7 @@ cultureInfo en-US
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "purpleair_sensor_data",
-			          "ConceptualProperty": "PM2.5 Avg Row"
+			          "ConceptualProperty": "avg_pm25_selected"
 			        }
 			      },
 			      "State": "Generated",
@@ -1637,22 +1637,6 @@ cultureInfo en-US
 			              "Agent": "Thesaurus"
 			            },
 			            "Weight": 0.605
-			          }
-			        }
-			      ]
-			    },
-			    "purpleair_sensor_data.avg_pm2_5": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "purpleair_sensor_data",
-			          "ConceptualProperty": "avg_pm2.5"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "avg_pm2.5": {
-			            "State": "Generated"
 			          }
 			        }
 			      ]

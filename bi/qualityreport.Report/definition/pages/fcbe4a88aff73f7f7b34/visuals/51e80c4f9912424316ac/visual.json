@@ -1,13 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "51e80c4f9912424316ac",
   "position": {
-    "x": 398.56497329864436,
-    "y": 524.75968779953428,
-    "z": 9000,
+    "x": 11.567848829248248,
+    "y": 10.516226208407375,
+    "z": 10000,
     "height": 168.25961933452007,
     "width": 869.69190743530055,
-    "tabOrder": 3000
+    "tabOrder": 4000
   },
   "visual": {
     "visualType": "clusteredColumnChart",
@@ -26,8 +26,8 @@
                   "Property": "humidity"
                 }
               },
-              "queryRef": "Sum(purpleair_sensor_data.humidity)",
-              "nativeQueryRef": "humidity",
+              "queryRef": "purpleair_sensor_data.humidity",
+              "nativeQueryRef": "Sum of humidity",
               "active": true
             }
           ]
@@ -44,14 +44,14 @@
                           "Entity": "purpleair_sensor_data"
                         }
                       },
-                      "Property": "PM2.5 Avg Row"
+                      "Property": "avg_pm25_selected"
                     }
                   },
                   "Function": 1
                 }
               },
               "queryRef": "Sum(purpleair_sensor_data.PM2.5 Avg Row)",
-              "nativeQueryRef": "Average of PM2.5 Avg Row"
+              "nativeQueryRef": "Average of avg_pm25_selected"
             }
           ]
         }
@@ -68,7 +68,7 @@
                         "Entity": "purpleair_sensor_data"
                       }
                     },
-                    "Property": "PM2.5 Avg Row"
+                    "Property": "avg_pm25_selected"
                   }
                 },
                 "Function": 1
@@ -319,5 +319,43 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "parentGroupName": "4bbb0b96e583e2a56fbb",
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "d1f1504e659b5dc7ea94",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "purpleair_sensor_data"
+                  }
+                },
+                "Property": "avg_pm25_selected"
+              }
+            },
+            "Function": 1
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "6c59df0377a3127e1a89",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "purpleair_sensor_data"
+              }
+            },
+            "Property": "humidity"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }
