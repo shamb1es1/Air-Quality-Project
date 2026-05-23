@@ -1,0 +1,120 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "cfd4eddda62c3661fa55",
+  "position": {
+    "x": 11.567848829248248,
+    "y": 18.665163400203767,
+    "z": 13000,
+    "height": 386.36888238421852,
+    "width": 327.05463508147335
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "pm25_preliminary_bins"
+                    }
+                  },
+                  "Property": "PM25 Bin"
+                }
+              },
+              "queryRef": "pm25_preliminary_bins.PM25 Bin",
+              "nativeQueryRef": "PM25 Bin",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "purpleair_sensor_data"
+                    }
+                  },
+                  "Property": "atm_row_count_by_bin"
+                }
+              },
+              "queryRef": "purpleair_sensor_data.atm_row_count_by_bin",
+              "nativeQueryRef": "atm_row_count_by_bin"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "purpleair_sensor_data"
+                    }
+                  },
+                  "Property": "cf1_row_count_by_bin"
+                }
+              },
+              "queryRef": "purpleair_sensor_data.cf1_row_count_by_bin",
+              "nativeQueryRef": "cf1_row_count_by_bin"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "categoryAxis": [
+        {
+          "properties": {
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Consolas'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Consolas'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 8,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "purpleair_sensor_data.atm_row_count_by_bin"
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "parentGroupName": "fcd565a8c161c408d52c"
+}

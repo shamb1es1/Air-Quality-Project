@@ -1,0 +1,66 @@
+table pm25_preliminary_bins
+	lineageTag: 970255b6-b0ec-4248-aaed-bc6b2d80effb
+
+	column 'PM25 Bin'
+		lineageTag: 0d500e5c-2af3-49c0-907d-f467851a0e6b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [PM25 Bin]
+		sortByColumn: Sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column Sort
+		formatString: 0
+		lineageTag: fc45c246-7bef-41fa-ac3b-1fccf1000c11
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Sort]
+
+		annotation SummarizationSetBy = Automatic
+
+	column MinValue
+		lineageTag: 5111ad91-3df1-403c-ab51-dd2216e7733b
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [MinValue]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column MaxValue
+		lineageTag: 96fb8b57-64da-481a-ab9f-ff7d536e0cce
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [MaxValue]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition pm25_preliminary_bins = calculated
+		mode: import
+		source =
+				
+				DATATABLE(
+				    "PM25 Bin", STRING,
+				    "Sort", INTEGER,
+				    "MinValue", DOUBLE,
+				    "MaxValue", DOUBLE,
+				    {
+				        {"0–5", 1, 0, 5},
+				        {"5–10", 2, 5, 10},
+				        {"10–25", 3, 10, 25},
+				        {"25–50", 4, 25, 50},
+				        {"50–100", 5, 50, 100},
+				        {"100–150", 6, 100, 150},
+				        {"150–200", 7, 150, 200},
+				        {"200–250", 8, 200, 250},
+				        {"250–300", 9, 250, 300},
+				        {"300+", 10, 300, 999999}
+				    }
+				)
+
+	annotation PBI_Id = 3f5738867eae470f8c0a8b5b21c8d00b
+

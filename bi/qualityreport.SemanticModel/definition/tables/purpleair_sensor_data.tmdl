@@ -42,10 +42,6 @@ table purpleair_sensor_data
 			    "PM2.5 " & SelectedFormula & " A vs B"
 		lineageTag: c084dd6d-81b0-43cd-a45f-459e693f1a0a
 
-	measure count_w_l = COUNT(purpleair_sensor_data[is_reliable])
-		formatString: 0
-		lineageTag: 4458d2c3-c715-4a98-93e7-a867c0f87152
-
 	measure sensor_count = DISTINCTCOUNT(purpleair_sensor_data[sensor_index])
 		formatString: 0
 		lineageTag: 423b1ab9-2c89-416f-94dc-9dc79b7bf5a2
@@ -81,6 +77,68 @@ table purpleair_sensor_data
 		lineageTag: ca4c59e7-13d2-46ba-bd3f-2fbc252f519e
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure avg_pm25_selected =
+			
+			VAR SelectedFormula =
+			    SELECTEDVALUE(formula_selector[Formula], "ATM")
+			RETURN
+			    SWITCH(
+			        SelectedFormula,
+			        "ATM",
+			            AVERAGEX(
+			                purpleair_sensor_data,
+			                DIVIDE(
+			                    purpleair_sensor_data[pm2.5_atm_a] +
+			                    purpleair_sensor_data[pm2.5_atm_b],
+			                    2
+			                )
+			            ),
+			        "CF1",
+			            AVERAGEX(
+			                purpleair_sensor_data,
+			                DIVIDE(
+			                    purpleair_sensor_data[pm2.5_cf_1_a] +
+			                    purpleair_sensor_data[pm2.5_cf_1_b],
+			                    2
+			                )
+			            )
+			    )
+		lineageTag: 68053429-f7d6-4687-8116-f1baf9a58d43
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure atm_row_count_by_bin =
+			
+			VAR BinMin = SELECTEDVALUE('pm25_preliminary_bins'[MinValue])
+			VAR BinMax = SELECTEDVALUE('pm25_preliminary_bins'[MaxValue])
+			RETURN
+			CALCULATE(
+			    COUNTROWS(purpleair_sensor_data),
+			    FILTER(
+			        purpleair_sensor_data,
+			        purpleair_sensor_data[pm25_atm_row_avg] >= BinMin &&
+			        purpleair_sensor_data[pm25_atm_row_avg] < BinMax
+			    )
+			)
+		formatString: 0
+		lineageTag: bc753af9-bd15-4320-8998-b43f13882d1d
+
+	measure cf1_row_count_by_bin =
+			
+			VAR BinMin = SELECTEDVALUE('pm25_preliminary_bins'[MinValue])
+			VAR BinMax = SELECTEDVALUE('pm25_preliminary_bins'[MaxValue])
+			RETURN
+			CALCULATE(
+			    COUNTROWS(purpleair_sensor_data),
+			    FILTER(
+			        purpleair_sensor_data,
+			        purpleair_sensor_data[pm25_cf1_row_avg] >= BinMin &&
+			        purpleair_sensor_data[pm25_cf1_row_avg] < BinMax
+			    )
+			)
+		formatString: 0
+		lineageTag: 8da224f8-c0e0-4b48-a5d8-8828d0fe9392
 
 	column time_stamp
 		dataType: int64
@@ -165,39 +223,6 @@ table purpleair_sensor_data
 
 		annotation SummarizationSetBy = Automatic
 
-	column avg_pm25_selected =
-			
-			VAR SelectedFormula =
-			    SELECTEDVALUE(formula_selector[Formula], "ATM")
-			RETURN
-			    SWITCH(
-			        SelectedFormula,
-			        "ATM",
-			            AVERAGEX(
-			                purpleair_sensor_data,
-			                DIVIDE(
-			                    purpleair_sensor_data[pm2.5_atm_a] +
-			                    purpleair_sensor_data[pm2.5_atm_b],
-			                    2
-			                )
-			            ),
-			        "CF1",
-			            AVERAGEX(
-			                purpleair_sensor_data,
-			                DIVIDE(
-			                    purpleair_sensor_data[pm2.5_cf_1_a] +
-			                    purpleair_sensor_data[pm2.5_cf_1_b],
-			                    2
-			                )
-			            )
-			    )
-		lineageTag: d2256380-d7f0-4e53-a921-89aa9531f559
-		summarizeBy: sum
-
-		annotation SummarizationSetBy = Automatic
-
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
-
 	column is_reliable =
 			
 			IF(
@@ -213,6 +238,34 @@ table purpleair_sensor_data
 		summarizeBy: none
 
 		annotation SummarizationSetBy = Automatic
+
+	column pm25_atm_row_avg =
+			
+			DIVIDE(
+			    purpleair_sensor_data[pm2.5_atm_a] +
+			    purpleair_sensor_data[pm2.5_atm_b],
+			    2
+			)
+		lineageTag: c73a58e2-995b-45a0-b70e-d251dec15bde
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column pm25_cf1_row_avg =
+			
+			DIVIDE(
+			    purpleair_sensor_data[pm2.5_cf_1_a] +
+			    purpleair_sensor_data[pm2.5_cf_1_b],
+			    2
+			)
+		lineageTag: 02b6173d-204e-4e5a-a903-d2069d3ca8bf
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	partition purpleair_sensor_data = m
 		mode: import

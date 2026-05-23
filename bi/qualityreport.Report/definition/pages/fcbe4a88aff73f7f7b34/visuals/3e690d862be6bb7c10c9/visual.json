@@ -1,13 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
   "name": "3e690d862be6bb7c10c9",
   "position": {
-    "x": 12.619471450088952,
-    "y": 12.619471450089009,
+    "x": 8.9596520965747839,
+    "y": 12.743801218070182,
     "z": 18000,
-    "height": 186.13720388881282,
-    "width": 744.54881555525128,
-    "tabOrder": 15000
+    "height": 187.97106796653514,
+    "width": 528.61947369791449
   },
   "visual": {
     "visualType": "scatterChart",
@@ -100,7 +99,7 @@
             "markerShape": {
               "expr": {
                 "Literal": {
-                  "Value": "'circle'"
+                  "Value": "'plus'"
                 }
               }
             }

@@ -30,6 +30,7 @@ ref table humidity_bins
 ref table atm_field_param
 ref table purpleair_cleaned
 ref table LocalDateTable_ba9b8c84-e565-40a4-8e6d-9fe0a0a96d03
+ref table pm25_preliminary_bins
 
 ref cultureInfo en-US
 

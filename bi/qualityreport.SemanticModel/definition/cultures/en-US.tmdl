@@ -1605,42 +1605,6 @@ cultureInfo en-US
 			      ],
 			      "SemanticType": "Time"
 			    },
-			    "purpleair_sensor_data.PM2_5_avg_row": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "purpleair_sensor_data",
-			          "ConceptualProperty": "avg_pm25_selected"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "PM2.5 avg row": {
-			            "State": "Generated"
-			          }
-			        },
-			        {
-			          "pm2.5 avg line": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.757
-			          }
-			        },
-			        {
-			          "pm2.5 average row": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.605
-			          }
-			        }
-			      ]
-			    },
 			    "purpleair_sensor_data.avg_humidity": {
 			      "Definition": {
 			        "Binding": {
