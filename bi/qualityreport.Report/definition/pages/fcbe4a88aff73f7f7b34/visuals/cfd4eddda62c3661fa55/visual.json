@@ -1,12 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "cfd4eddda62c3661fa55",
   "position": {
-    "x": 11.567848829248248,
-    "y": 18.665163400203767,
+    "x": 11.588212432271774,
+    "y": 12.33697780187342,
     "z": 13000,
-    "height": 386.36888238421852,
-    "width": 327.05463508147335
+    "height": 255.37544049878016,
+    "width": 327.63036967604762,
+    "tabOrder": 1000
   },
   "visual": {
     "visualType": "clusteredColumnChart",
@@ -41,11 +42,11 @@
                       "Entity": "purpleair_sensor_data"
                     }
                   },
-                  "Property": "atm_row_count_by_bin"
+                  "Property": "ATM Row Count"
                 }
               },
               "queryRef": "purpleair_sensor_data.atm_row_count_by_bin",
-              "nativeQueryRef": "atm_row_count_by_bin"
+              "nativeQueryRef": "ATM Row Count"
             },
             {
               "field": {
@@ -55,11 +56,11 @@
                       "Entity": "purpleair_sensor_data"
                     }
                   },
-                  "Property": "cf1_row_count_by_bin"
+                  "Property": "CF1 Row Count"
                 }
               },
               "queryRef": "purpleair_sensor_data.cf1_row_count_by_bin",
-              "nativeQueryRef": "cf1_row_count_by_bin"
+              "nativeQueryRef": "CF1 Row Count"
             }
           ]
         }
@@ -75,6 +76,32 @@
                   "Value": "'Consolas'"
                 }
               }
+            },
+            "labelColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 1,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            },
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "titleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'PM2.5 Bins'"
+                }
+              }
             }
           }
         }
@@ -86,6 +113,44 @@
               "expr": {
                 "Literal": {
                   "Value": "'Consolas'"
+                }
+              }
+            },
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "titleColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 1,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            },
+            "titleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Row Count'"
+                }
+              }
+            },
+            "labelColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 1,
+                      "Percent": 0
+                    }
+                  }
                 }
               }
             }
@@ -110,6 +175,86 @@
           },
           "selector": {
             "metadata": "purpleair_sensor_data.atm_row_count_by_bin"
+          }
+        }
+      ],
+      "legend": [
+        {
+          "properties": {
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Consolas'"
+                }
+              }
+            },
+            "labelColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 1,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            },
+            "showTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "titleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "''"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Consolas'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 1,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
           }
         }
       ]

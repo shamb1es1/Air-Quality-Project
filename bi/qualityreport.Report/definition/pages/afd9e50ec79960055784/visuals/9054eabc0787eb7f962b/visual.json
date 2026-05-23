@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "9054eabc0787eb7f962b",
   "position": {
     "x": 0,
@@ -88,7 +88,7 @@
                           [
                             {
                               "Literal": {
-                                "Value": "'All distances'"
+                                "Value": "'≤0.1 mi'"
                               }
                             }
                           ]
@@ -148,6 +148,18 @@
               "expr": {
                 "Literal": {
                   "Value": "false"
+                }
+              }
+            },
+            "background": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 6,
+                      "Percent": 0
+                    }
+                  }
                 }
               }
             }

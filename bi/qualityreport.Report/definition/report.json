@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.2.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.3.0/schema.json",
   "themeCollection": {
     "baseTheme": {
       "name": "CY18SU07",
@@ -58,7 +58,9 @@
   "publicCustomVisuals": [
     "BoxandWhiskerByMAQ1823AD39DT234AB532063E128AX",
     "BoxWhiskerChart1455240051538",
-    "boxandwhiskerwithpoints6C29D629F202A5FF5B6B023486584FCA"
+    "boxandwhiskerwithpoints6C29D629F202A5FF5B6B023486584FCA",
+    "easyTerritoryTerritoryVisualB76516E7EB374091BC4E1AF5914B1F41",
+    "iconMapProE938B1CED4834168A55864E1F8E7242E"
   ],
   "resourcePackages": [
     {

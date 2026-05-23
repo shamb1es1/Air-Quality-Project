@@ -50,7 +50,7 @@ table purpleair_sensor_data
 		formatString: 0
 		lineageTag: 07f1e199-2388-4de1-b264-117de2472dd3
 
-	measure avg_pm25_a =
+	measure 'Sensor A PM2.5 Avg.' =
 			
 			VAR SelectedFormula =
 			    SELECTEDVALUE(formula_selector[Formula], "ATM")
@@ -64,7 +64,7 @@ table purpleair_sensor_data
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure avg_pm25_b =
+	measure 'Sensor B PM2.5 Avg.' =
 			
 			VAR SelectedFormula =
 			    SELECTEDVALUE(formula_selector[Formula], "ATM")
@@ -108,7 +108,7 @@ table purpleair_sensor_data
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure atm_row_count_by_bin =
+	measure 'ATM Row Count' =
 			
 			VAR BinMin = SELECTEDVALUE('pm25_preliminary_bins'[MinValue])
 			VAR BinMax = SELECTEDVALUE('pm25_preliminary_bins'[MaxValue])
@@ -124,7 +124,7 @@ table purpleair_sensor_data
 		formatString: 0
 		lineageTag: bc753af9-bd15-4320-8998-b43f13882d1d
 
-	measure cf1_row_count_by_bin =
+	measure 'CF1 Row Count' =
 			
 			VAR BinMin = SELECTEDVALUE('pm25_preliminary_bins'[MinValue])
 			VAR BinMax = SELECTEDVALUE('pm25_preliminary_bins'[MaxValue])
@@ -139,6 +139,14 @@ table purpleair_sensor_data
 			)
 		formatString: 0
 		lineageTag: 8da224f8-c0e0-4b48-a5d8-8828d0fe9392
+
+	measure scatterplot_title =
+			
+			VAR SelectedFormula =
+			    SELECTEDVALUE(formula_selector[Formula], "ATM")
+			RETURN
+			    SelectedFormula & " A vs " & SelectedFormula & " B"
+		lineageTag: ddaeaa50-21a0-4987-b758-f8f44cf87dba
 
 	column time_stamp
 		dataType: int64
@@ -231,8 +239,8 @@ table purpleair_sensor_data
 			        purpleair_cleaned[sensor_index], purpleair_sensor_data[sensor_index],
 			        purpleair_cleaned[datetime_timestamp], purpleair_sensor_data[utc]
 			    ),
-			    "Valid",
-			    "Invalid"
+			    "W",
+			    "L"
 			)
 		lineageTag: fc3bafc7-3ee6-4917-b0b1-3389fdf6f8f8
 		summarizeBy: none

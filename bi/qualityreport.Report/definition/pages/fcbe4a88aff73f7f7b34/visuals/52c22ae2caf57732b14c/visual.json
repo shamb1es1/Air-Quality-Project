@@ -1,12 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "52c22ae2caf57732b14c",
   "position": {
     "x": 8.9375128834585418,
     "y": 11.4766285661184,
     "z": 16000,
     "height": 198.23267523295402,
-    "width": 527.31326012405611
+    "width": 527.31326012405611,
+    "tabOrder": 0
   },
   "visual": {
     "visualType": "lineChart",
@@ -41,11 +42,11 @@
                       "Entity": "purpleair_sensor_data"
                     }
                   },
-                  "Property": "avg_pm25_a"
+                  "Property": "Sensor A PM2.5 Avg."
                 }
               },
               "queryRef": "purpleair_sensor_data.avg_pm25_a",
-              "nativeQueryRef": "avg_pm25_a"
+              "nativeQueryRef": "Sensor A PM2.5 Avg."
             },
             {
               "field": {
@@ -55,11 +56,11 @@
                       "Entity": "purpleair_sensor_data"
                     }
                   },
-                  "Property": "avg_pm25_b"
+                  "Property": "Sensor B PM2.5 Avg."
                 }
               },
               "queryRef": "purpleair_sensor_data.avg_pm25_b",
-              "nativeQueryRef": "avg_pm25_b"
+              "nativeQueryRef": "Sensor B PM2.5 Avg."
             }
           ]
         }
@@ -111,9 +112,16 @@
                   "expr": {
                     "ThemeDataColor": {
                       "ColorId": 1,
-                      "Percent": 0.4
+                      "Percent": 0
                     }
                   }
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Consolas'"
                 }
               }
             }
@@ -137,6 +145,79 @@
           },
           "selector": {
             "metadata": "purpleair_sensor_data.avg_pm25_a"
+          }
+        }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "labelColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 1,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Consolas'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Consolas'"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 1,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Sensor A PM2.5 Avg. and Sensor B PM2.5 Avg. Over Time'"
+                }
+              }
+            }
           }
         }
       ]

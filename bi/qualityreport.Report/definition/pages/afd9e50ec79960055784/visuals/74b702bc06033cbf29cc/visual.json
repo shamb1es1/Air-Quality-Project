@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "74b702bc06033cbf29cc",
   "position": {
     "x": 6.9523890350504871,
@@ -75,7 +75,7 @@
                           [
                             {
                               "Literal": {
-                                "Value": "'''minimal_data_matched''[mae_atm_a]'"
+                                "Value": "'''minimal_data_matched''[ATM A MAE]'"
                               }
                             }
                           ]
@@ -103,7 +103,7 @@
                                 "0": [
                                   {
                                     "Literal": {
-                                      "Value": "'''minimal_data_matched''[mae_atm_a]'"
+                                      "Value": "'''minimal_data_matched''[ATM A MAE]'"
                                     }
                                   }
                                 ]
@@ -158,6 +158,18 @@
               "expr": {
                 "Literal": {
                   "Value": "'Consolas'"
+                }
+              }
+            },
+            "background": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 6,
+                      "Percent": 0
+                    }
+                  }
                 }
               }
             }

@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "7185af968cf430c948d0",
   "position": {
     "x": 13.904778070100974,
@@ -42,11 +42,11 @@
                       "Entity": "minimal_data_matched"
                     }
                   },
-                  "Property": "mae_atm_a"
+                  "Property": "ATM A MAE"
                 }
               },
               "queryRef": "minimal_data_matched.mae_atm_a1",
-              "nativeQueryRef": "mae_atm_a"
+              "nativeQueryRef": "ATM A MAE"
             },
             {
               "field": {
@@ -56,11 +56,11 @@
                       "Entity": "minimal_data_matched"
                     }
                   },
-                  "Property": "mae_atm_b"
+                  "Property": "ATM B MAE"
                 }
               },
               "queryRef": "minimal_data_matched.mae_atm_b",
-              "nativeQueryRef": "mae_atm_b"
+              "nativeQueryRef": "ATM B MAE"
             }
           ]
         }
@@ -201,6 +201,13 @@
                   }
                 }
               }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
             }
           }
         }
@@ -253,6 +260,34 @@
                   "Value": "true"
                 }
               }
+            },
+            "strokeWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "3D"
+                }
+              }
+            },
+            "showMarker": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "markerSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "6D"
+                }
+              }
+            },
+            "markerShape": {
+              "expr": {
+                "Literal": {
+                  "Value": "'diamond'"
+                }
+              }
             }
           }
         }
@@ -271,6 +306,19 @@
               "expr": {
                 "Literal": {
                   "Value": "'Consolas'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "y2Axis": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

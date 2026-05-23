@@ -1,0 +1,34 @@
+table reliability_lookup
+	lineageTag: f1ba59b9-b0af-4b75-a406-334b95956e8c
+
+	column flag
+		lineageTag: bab83cd6-29f8-466b-b583-46d41c842558
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [flag]
+
+		annotation SummarizationSetBy = Automatic
+
+	column label
+		lineageTag: fcf0d089-9a0e-43b8-bef0-cd44acf67303
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [label]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition reliability_lookup = calculated
+		mode: import
+		source =
+				
+				DATATABLE(
+				    "flag", STRING,
+				    "label", STRING,
+				    {
+				        {"W", "Valid Rows"},
+				        {"L", "Problematic Rows"}
+				    }
+				)
+
+	annotation PBI_Id = ceebc92269a74ef8af21797fce93245a
+

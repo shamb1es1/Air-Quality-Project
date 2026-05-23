@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "1ad202d5f4c7198612c6",
   "position": {
     "x": 17.811511701454776,
@@ -13,26 +13,21 @@
     "visualType": "azureMap",
     "query": {
       "queryState": {
-        "Tooltips": {
+        "Size": {
           "projections": [
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "purpleair_sensor_data"
-                        }
-                      },
-                      "Property": "sensor_index"
+                    "SourceRef": {
+                      "Entity": "purpleair_sensor_data"
                     }
                   },
-                  "Function": 5
+                  "Property": "reading_count"
                 }
               },
-              "queryRef": "CountNonNull(purpleair_sensor_data.sensor_index)",
-              "nativeQueryRef": "Count of sensor_index"
+              "queryRef": "purpleair_sensor_data.reading_count",
+              "nativeQueryRef": "reading_count"
             }
           ]
         },
@@ -94,7 +89,7 @@
             "defaultStyle": {
               "expr": {
                 "Literal": {
-                  "Value": "'road'"
+                  "Value": "'grayscale_light'"
                 }
               }
             },
@@ -122,18 +117,74 @@
             "zoom": {
               "expr": {
                 "Literal": {
-                  "Value": "0D"
+                  "Value": "5.17D"
                 }
               }
             },
             "centerLatitude": {
               "expr": {
                 "Literal": {
-                  "Value": "0D"
+                  "Value": "40.2047507743446D"
                 }
               }
             },
             "centerLongitude": {
+              "expr": {
+                "Literal": {
+                  "Value": "-74.71116D"
+                }
+              }
+            },
+            "showRoadDetails": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "showBuildingFootprints": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "showLabels": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "showAdminDistrictBorders": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "showAdminDistrict2Borders": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "showCountryRegionBorders": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "worldWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "pitch": {
               "expr": {
                 "Literal": {
                   "Value": "0D"
@@ -163,14 +214,14 @@
             "minBubbleRadius": {
               "expr": {
                 "Literal": {
-                  "Value": "6L"
+                  "Value": "1L"
                 }
               }
             },
             "maxRadius": {
               "expr": {
                 "Literal": {
-                  "Value": "21L"
+                  "Value": "7L"
                 }
               }
             },
@@ -194,6 +245,46 @@
                   "Value": "''"
                 }
               }
+            },
+            "fillColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 6,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            },
+            "clusteringEnabled": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "borderShow": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "mapTransparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "41D"
+                }
+              }
+            },
+            "clusteredBubbleRadius": {
+              "expr": {
+                "Literal": {
+                  "Value": "6L"
+                }
+              }
             }
           }
         }
@@ -215,6 +306,19 @@
         {
           "properties": {
             "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "barChart": [
+        {
+          "properties": {
+            "showModern": {
               "expr": {
                 "Literal": {
                   "Value": "false"

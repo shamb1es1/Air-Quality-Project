@@ -40,8 +40,8 @@ table atm_field_param
 		mode: import
 		source =
 				{
-				    ("ATM A MAE", NAMEOF('minimal_data_matched'[mae_atm_a]), 0),
-				    ("ATM B MAE", NAMEOF('minimal_data_matched'[mae_atm_b]), 1)
+				    ("ATM A MAE", NAMEOF('minimal_data_matched'[ATM A MAE]), 0),
+				    ("ATM B MAE", NAMEOF('minimal_data_matched'[ATM B MAE]), 1)
 				}
 
 	annotation PBI_Id = f05f0d66e6864fde928fbf6eaf9c944c

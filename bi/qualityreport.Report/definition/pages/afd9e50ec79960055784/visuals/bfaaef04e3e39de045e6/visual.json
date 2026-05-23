@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "bfaaef04e3e39de045e6",
   "position": {
     "x": 10.229426575009256,
@@ -121,6 +121,13 @@
                   }
                 }
               }
+            },
+            "titleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'PM2.5 ATM A'"
+                }
+              }
             }
           }
         }
@@ -163,6 +170,13 @@
                   }
                 }
               }
+            },
+            "titleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'PM2.5 ATM B'"
+                }
+              }
             }
           }
         }
@@ -191,7 +205,14 @@
             "markerShape": {
               "expr": {
                 "Literal": {
-                  "Value": "'plus'"
+                  "Value": "'circle'"
+                }
+              }
+            },
+            "bubbleSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "5L"
                 }
               }
             }
@@ -204,7 +225,7 @@
             "transparency": {
               "expr": {
                 "Literal": {
-                  "Value": "0D"
+                  "Value": "60D"
                 }
               }
             }
@@ -232,6 +253,20 @@
               "expr": {
                 "Literal": {
                   "Value": "'Consolas'"
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'PM2.5 ATM A vs B'"
                 }
               }
             }

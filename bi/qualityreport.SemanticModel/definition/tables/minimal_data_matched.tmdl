@@ -1,7 +1,7 @@
 table minimal_data_matched
 	lineageTag: ee2f18da-1467-4d57-b5ec-06d75edacebb
 
-	measure mae_atm_b =
+	measure 'ATM B MAE' =
 			
 			AVERAGEX(
 			    minimal_data_matched,
@@ -124,7 +124,7 @@ table minimal_data_matched
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure mae_atm_a =
+	measure 'ATM A MAE' =
 			
 			AVERAGEX(
 			    minimal_data_matched,
@@ -258,7 +258,9 @@ table minimal_data_matched
 			    minimal_data_matched[pm25_nowcast_value] < 25, 3,
 			    minimal_data_matched[pm25_nowcast_value] < 50, 4,
 			    minimal_data_matched[pm25_nowcast_value] < 100, 5,
-			    6
+			    minimal_data_matched[pm25_nowcast_value] < 150, 6,
+			    minimal_data_matched[pm25_nowcast_value] < 200, 7,
+			    8
 			)
 		formatString: 0
 		lineageTag: 4ce11c9a-089c-48f0-bc92-50ca350fb868

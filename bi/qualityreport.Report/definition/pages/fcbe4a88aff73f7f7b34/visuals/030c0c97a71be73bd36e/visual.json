@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "030c0c97a71be73bd36e",
   "position": {
     "x": 8.4567683139460286,
@@ -23,7 +23,8 @@
                     "textStyle": {
                       "fontWeight": "bold",
                       "fontFamily": "Consolas",
-                      "fontSize": "9pt"
+                      "fontSize": "9pt",
+                      "color": "#f58c02"
                     }
                   }
                 ],

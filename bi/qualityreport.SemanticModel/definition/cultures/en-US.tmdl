@@ -9,7 +9,7 @@ cultureInfo en-US
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "minimal_data_matched",
-			          "ConceptualProperty": "mae_atm_a"
+			          "ConceptualProperty": "ATM A MAE"
 			        }
 			      },
 			      "State": "Generated",
@@ -30,16 +30,6 @@ cultureInfo en-US
 			          "atm a": {
 			            "State": "Generated",
 			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "ATM A MAE": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
 			          }
 			        }
 			      ]
@@ -7109,7 +7099,7 @@ cultureInfo en-US
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "minimal_data_matched",
-			          "ConceptualProperty": "mae_atm_b"
+			          "ConceptualProperty": "ATM B MAE"
 			        }
 			      },
 			      "State": "Generated",
