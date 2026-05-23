@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
   "name": "ec5490c987fd902a96c5",
   "position": {
-    "x": 23.174630116834987,
-    "y": 121.66680811338368,
-    "z": 10000,
-    "height": 81.111205408922459,
-    "width": 164.5398738295284,
+    "x": 17.877584554292756,
+    "y": 120.93660139668629,
+    "z": 11000,
+    "height": 80.974941804737782,
+    "width": 83.078187046419274,
     "tabOrder": 7000
   },
   "visual": {
@@ -17,23 +17,17 @@
           "projections": [
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "minimal_data_matched"
-                        }
-                      },
-                      "Property": "sensor_index"
+                    "SourceRef": {
+                      "Entity": "minimal_data_matched"
                     }
                   },
-                  "Function": 2
+                  "Property": "Sensors"
                 }
               },
-              "queryRef": "Count(minimal_data_matched.sensor_index)",
-              "nativeQueryRef": "Sensor Count",
-              "displayName": "Sensor Count"
+              "queryRef": "minimal_data_matched.Sensors",
+              "nativeQueryRef": "Sensors"
             }
           ]
         }
@@ -42,18 +36,13 @@
         "sort": [
           {
             "field": {
-              "Aggregation": {
+              "Measure": {
                 "Expression": {
-                  "Column": {
-                    "Expression": {
-                      "SourceRef": {
-                        "Entity": "minimal_data_matched"
-                      }
-                    },
-                    "Property": "sensor_index"
+                  "SourceRef": {
+                    "Entity": "minimal_data_matched"
                   }
                 },
-                "Function": 2
+                "Property": "Sensors"
               }
             },
             "direction": "Descending"
@@ -97,7 +86,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "11D"
+                  "Value": "9D"
                 }
               }
             },
@@ -163,6 +152,13 @@
               "expr": {
                 "Literal": {
                   "Value": "false"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "16D"
                 }
               }
             }

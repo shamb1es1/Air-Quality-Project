@@ -73,7 +73,7 @@ table minimal_data_matched
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure bias_atm_a =
+	measure 'ATM A Bias' =
 			
 			AVERAGEX(
 			    minimal_data_matched,
@@ -83,7 +83,7 @@ table minimal_data_matched
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure bias_atm_b =
+	measure 'ATM B Bias' =
 			
 			AVERAGEX(
 			    minimal_data_matched,
@@ -133,6 +133,14 @@ table minimal_data_matched
 		lineageTag: e8c9ea92-c606-43d1-9e79-c733a524cf18
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Rows = COUNTROWS(minimal_data_matched)
+		formatString: 0
+		lineageTag: 7de83667-19fc-4044-bb10-12428cefd928
+
+	measure Sensors = DISTINCTCOUNT(minimal_data_matched[sensor_index])
+		formatString: 0
+		lineageTag: 7e0a5dce-dd8b-4333-ad23-0a8e3731c493
 
 	column sensor_index
 		formatString: 0
