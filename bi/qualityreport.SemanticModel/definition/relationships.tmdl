@@ -44,11 +44,6 @@ relationship 050765e3-a65d-6968-534d-bb6760e74aeb
 	fromColumn: minimal_data_matched.humidity_bin_id
 	toColumn: humidity_bins.humidity_bin
 
-relationship 77961e06-d277-ae53-3b8e-f3c5d1ddcd37
-	toCardinality: many
-	fromColumn: minimal_data_matched.distance_category_id
-	toColumn: distance_categories.distance_category_id
-
 relationship ceda352f-626a-ac21-d886-4d1ef815ad15
 	fromColumn: purpleair_cleaned.datetime_timestamp
 	toColumn: date_table.utcdt
@@ -73,4 +68,9 @@ relationship 86bc64ba-add9-fc91-3f20-1b02b426e7b4
 relationship 5b1b43b6-ed75-5fb1-0bd5-8beb14e05a41
 	fromColumn: minimal_data_matched.pm25_bin_id
 	toColumn: pm25_bins.pm25_bin_id
+
+relationship 8f311174-17ff-9177-6b9d-2225913deb60
+	toCardinality: many
+	fromColumn: minimal_data_matched.distance_category_id
+	toColumn: distance_categories.distance_category_id
 

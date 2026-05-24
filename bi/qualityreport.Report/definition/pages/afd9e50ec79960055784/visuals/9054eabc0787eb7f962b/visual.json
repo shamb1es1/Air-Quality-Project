@@ -88,7 +88,7 @@
                           [
                             {
                               "Literal": {
-                                "Value": "'All distances'"
+                                "Value": "'≤5.0 mi'"
                               }
                             }
                           ]
@@ -230,5 +230,23 @@
     },
     "drillFilterOtherVisuals": true
   },
-  "parentGroupName": "5dadea9dcf29810c4bc6"
+  "parentGroupName": "5dadea9dcf29810c4bc6",
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "7cf74af1acffabaa39a2",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "distance_categories"
+              }
+            },
+            "Property": "distance_label"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
+  }
 }

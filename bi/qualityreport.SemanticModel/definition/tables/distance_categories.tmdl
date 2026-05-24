@@ -35,10 +35,10 @@ table distance_categories
 				        {2, "≤1.0 mi"},
 				        {3, "≤1.0 mi"},
 				
-				        {1, "All distances"},
-				        {2, "All distances"},
-				        {3, "All distances"},
-				        {4, "All distances"}
+				        {1, "≤5.0 mi"},
+				        {2, "≤5.0 mi"},
+				        {3, "≤5.0 mi"},
+				        {4, "≤5.0 mi"}
 				    }
 				)
 

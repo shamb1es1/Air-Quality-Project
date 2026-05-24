@@ -283,7 +283,8 @@ table minimal_data_matched
 			    minimal_data_matched[dist_miles] <= 0.1, 1,
 			    minimal_data_matched[dist_miles] <= 0.5, 2,
 			    minimal_data_matched[dist_miles] <= 1.0, 3,
-			    4
+			    minimal_data_matched[dist_miles] <= 5.0, 4,
+			    BLANK()
 			)
 		formatString: 0
 		lineageTag: d5ccba76-6960-45cf-8b0b-49fab641d8f8
