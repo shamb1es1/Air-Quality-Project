@@ -27,7 +27,7 @@ END //
 DELIMITER ;
 
 # All column categories in both datasets show that vast majority of their observations
-# are in the "Good" AQI need for concern category (all 97%+)
+# are in the "Good" AQI bin for all categories (all 97%+)
 # A noticable difference in the PurpleAir and AirNow percentages is that the hazardous
 # category (the most extreme) is the second most populated in all columns for
 # PurpleAir, with the other ascendingly extreme categories tapering off in volume 
@@ -190,13 +190,11 @@ WHERE pm25_atm_a <= 202.1 AND pm25_atm_b <= 202.1 AND pm25_cf_1_a <= 202.1 AND p
 
 # See how many PurpleAir sensors have their closest AirNow sensor under a certain distance in miles
 SELECT
-SUM(dist_miles <= 0.1) AS `Under 0.1`,
-SUM(dist_miles <= 0.3) AS `Under 0.3`,
-SUM(dist_miles <= 0.5) AS `Under 0.5`,
-SUM(dist_miles <= 1.0) AS `Under 1.0`,
-SUM(dist_miles <= 5.0) AS `Under 5.0`
-FROM sensor_distances
-WHERE dist_rank = 1;
+  SUM(dist_miles <= 0.1) AS `Matched rows <= 0.1`,
+  SUM(dist_miles <= 0.5) AS `Matched rows <= 0.5`,
+  SUM(dist_miles <= 1.0) AS `Matched rows <= 1.0`,
+  SUM(dist_miles <= 5.0) AS `Matched rows <= 5.0`
+FROM minimal_data_matched;
 
 # Get the % of rows in PurpleAir dataset that are greater than the max appearence in AirNow dataset
 # That being 3.44%
@@ -218,9 +216,7 @@ CALL get_correlation('pm25_atm_b', 'pm25_nowcast_value', 'data_matched', '');
 CALL get_correlation('pm25_cf_1_a', 'pm25_nowcast_value', 'data_matched', '');
 CALL get_correlation('pm25_cf_1_b', 'pm25_nowcast_value', 'data_matched', '');
 
-select * from data_matched;
-
-# Strong correlation for all data under 202.1 PM2.5 (~0.64) and having sensors within 0.1 miles of each other
+# Strong correlation for all data under 202.1 PM2.5 (~0.75-0.79) and having sensors within 0.1 miles of each other
 CALL get_correlation('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.1');
 CALL get_correlation('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.1');
 CALL get_correlation('pm25_cf_1_a', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.1');
@@ -347,6 +343,7 @@ CALL get_bias('pm25_atm_a', 'pm25_atm_b', 'minimal_data_matched', 'dist_miles <=
 CALL get_bias('pm25_atm_a', 'pm25_atm_b', 'minimal_data_matched', 'dist_miles <= 0.5');
 CALL get_bias('pm25_atm_a', 'pm25_atm_b', 'minimal_data_matched', 'dist_miles <= 1.0');
 
+
 # Symmetric percent difference between PM2.5 readings
 DROP PROCEDURE IF EXISTS get_symmetric_pct_diff;
 DELIMITER //
@@ -389,6 +386,7 @@ CALL get_symmetric_pct_diff('pm25_atm_a', 'pm25_nowcast_value', 'minimal_data_ma
 CALL get_symmetric_pct_diff('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.1');
 CALL get_symmetric_pct_diff('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.5');
 CALL get_symmetric_pct_diff('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 1.0');
+
 # Weighted percent difference between PM2.5 readings
 DROP PROCEDURE IF EXISTS get_weighted_pct_error;
 DELIMITER //
@@ -428,9 +426,12 @@ CALL get_weighted_pct_error('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_ma
 CALL get_weighted_pct_error('pm25_atm_b', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 1.0');
 
 CALL get_correlation('humidity', 'pm25_nowcast_value', 'minimal_data_matched', '');
+CALL get_correlation('humidity', 'pm25_atm_a', 'minimal_data_matched', '');
+CALL get_correlation('humidity', 'pm25_atm_b', 'minimal_data_matched', '');
+
+CALL get_correlation('humidity', 'pm25_nowcast_value', 'minimal_data_matched', 'dist_miles <= 0.1');
 CALL get_correlation('humidity', 'pm25_atm_a', 'minimal_data_matched', 'dist_miles <= 0.1');
 CALL get_correlation('humidity', 'pm25_atm_b', 'minimal_data_matched', 'dist_miles <= 0.1');
-CALL get_correlation('temperature', 'pm25_atm_a', 'minimal_data_matched', 'dist_miles <= 0.5');
 
 CREATE OR REPLACE VIEW minimal_data_matched_error AS
 SELECT *,
